@@ -3,7 +3,7 @@
 **Group members:**
 - Nina Madsen
 - Natacha Andersen
-- Emilie Østergaard Knudsen :)))
+- Emilie Østergaard Knudsen
 
 This repository contains  
 1. Inaugural project. 
