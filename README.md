@@ -1,9 +1,9 @@
 # \[Group name\]
 
 **Group members:**
-- A
-- B
-- C
+- Nina Madsen
+- Natacha Andersen
+- Emilie Østergaard Knudsen
 
 This repository contains  
 1. Inaugural project. 
