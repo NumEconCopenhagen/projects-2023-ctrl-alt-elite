@@ -63,7 +63,7 @@ class HouseholdSpecializationModelClass:
         Q = C**par.omega*H**(1-par.omega)
         utility = np.fmax(Q,1e-8)**(1-par.rho)/(1-par.rho)
 
-        # d. disutlity of work
+        # d. disutility of work
         epsilon_ = 1+1/par.epsilon
         TM = LM+HM
         TF = LF+HF
@@ -109,10 +109,29 @@ class HouseholdSpecializationModelClass:
 
         return opt
 
-    def solve(self,do_print=False):
+    def solve_cont(self,do_print=False):
         """ solve model continously """
+        par = self.par
+        sol = self.sol
+        
+        # objective function (to minimize)
+        obj = lambda x: -self.calc_utility(x[0],x[1],x[2],x[3])
 
-        pass    
+        # constraints and bounds
+        time_constraint = lambda x: 24-x[0]-x[1]-x[2]-x[3]
+        constraints = ({'type':'ineq', 'fun':time_constraint})
+        bounds = ((0, 24),(0, 24),(0, 24),(0, 24))
+
+        # call solver
+        x0=[6,6,6,6]
+        result = optimize.minimize(obj, x0, method='slsqp', bounds=bounds, constraints=constraints)
+
+        sol.LM = result.x[0]
+        sol.HM = result.x[1]
+        sol.LF = result.x[2]
+        sol.HF = result.x[3]
+
+
 
     def solve_wF_vec(self,discrete=False):
         """ solve model for vector of female wages """
