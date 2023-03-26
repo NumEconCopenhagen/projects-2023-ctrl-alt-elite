@@ -110,14 +110,16 @@ class HouseholdSpecializationModelClass:
                 print(f'{k} = {v:6.4f}')
 
         return opt
-
-    def solve_cont(self,do_print=False):
+    # Question 3
+    def obj(self, x):
+        """Define our objective function"""
+        LM, LF, HM, HF = x
+        return -self.calc_utility(LM, HM, LF, HF)
+        
+    def solve_cont(self):
         """ solve model continously """
         par = self.par
         sol = self.sol
-        
-        # objective function (to minimize)
-        obj = lambda x: -self.calc_utility(x[0],x[1],x[2],x[3])
 
         # constraints and bounds
         time_constraint = lambda x: 24-x[0]-x[1]-x[2]-x[3]
@@ -126,13 +128,12 @@ class HouseholdSpecializationModelClass:
 
         # call solver
         x0=[6,6,6,6]
-        result = optimize.minimize(obj, x0, method='slsqp', bounds=bounds, constraints=constraints)
+        result = optimize.minimize(self.obj, x0, method='Nelder-Mead', bounds=bounds, constraints=constraints)
 
         sol.LM = result.x[0]
         sol.HM = result.x[1]
         sol.LF = result.x[2]
         sol.HF = result.x[3]
-
 
 
     def solve_wF_vec(self,discrete=False):
