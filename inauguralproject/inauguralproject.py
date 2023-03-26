@@ -121,6 +121,7 @@ class HouseholdSpecializationModelClass:
         """ solve model continously """
         par = self.par
         sol = self.sol
+        opt = SimpleNamespace()
 
         # constraints and bounds
         #time_constraint_M = lambda x: 24-x[0]-x[2]
@@ -151,17 +152,15 @@ class HouseholdSpecializationModelClass:
 
             par.wF = wF
 
-            if discrete == True:
-                optimal = self.solve_discrete()
+            if discrete:
+                result = self.solve_discrete()
             else:
-                optimal = self.solve_cont()
-
-            sol.LM_vec[i] = optimal.LM
-            sol.HM_vec[i] = optimal.HM
-            sol.LF_vec[i] = optimal.LF
-            sol.HF_vec[i] = optimal.HF
-
-        return sol.LM_vec, sol.HM_vec, sol.LF_vec, sol.HF_vec
+                result = self.solve_cont()
+            
+            sol.LF_vec[i] = result.LF
+            sol.HF_vec[i] = result.HF
+            sol.LM_vec[i] = result.LM
+            sol.HM_vec[i] = result.HM
 
     def run_regression(self):
         """ run regression """
