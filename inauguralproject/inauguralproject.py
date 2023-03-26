@@ -123,19 +123,10 @@ class HouseholdSpecializationModelClass:
             LM, HM, LF, HF = x
             return -self.calc_utility(LM, HM, LF, HF)
 
-        # constraints and bounds
-        #time_constraint_M = lambda x: 24-x[0]-x[2]
-        #time_constraint_F = lambda x: 24-x[1]-x[3]
-        def constraints(x):
-            LM, HM, LF, HF = x
-            return [24 - LM-HM, 24 -LF-HF]
-
-        constraints = ({'type':'ineq', 'fun' :constraints})
-
-        bounds = ((0,24),(0,24),(0,24),(0,24))
-
-        #bounds = optimize.Bounds([0,0,0,0], [24,24,24,24])
-        #constraints = optimize.LinearConstraint([[1,1,0,0], [0,0,1,1]], [0,0], [24,24])
+        time_constraint_M = lambda x: 24-x[0]-x[1]
+        time_constraint_F = lambda x: 24-x[2]-x[3]
+        constraints = ({'type':'ineq', 'fun':time_constraint_M}, {'type':'ineq', 'fun':time_constraint_F})
+        bounds = ([0,24],[0,24],[0,24],[0,24])
 
         # call solver
         x0=[6,6,6,6]
