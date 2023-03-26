@@ -122,24 +122,22 @@ class HouseholdSpecializationModelClass:
         sol = self.sol
 
         # constraints and bounds
-        time_constraint = lambda x: 24-x[0]-x[1]-x[2]-x[3]
-        constraints = ({'type':'ineq', 'fun':time_constraint})
+        time_constraint_M = lambda x: 24-x[0]-x[2]
+        time_constraint_F = lambda x: 24-x[1]-x[3]
+        constraint_M = ({'type':'ineq', 'fun':time_constraint_M})
+        constraint_F = ({'type':'ineq', 'fun':time_constraint_F})
         bounds = ((0, 24),(0, 24),(0, 24),(0, 24))
 
         # call solver
         x0=[6,6,6,6]
-        result = optimize.minimize(self.obj, x0, method='Nelder-Mead', bounds=bounds, constraints=constraints)
+        result = optimize.minimize(self.obj, x0, method='Nelder-Mead', bounds=bounds, constraints=constraint_M, constraints= constraint_F)
 
         sol.LM = result.x[0]
         sol.HM = result.x[1]
         sol.LF = result.x[2]
         sol.HF = result.x[3]
 
-
-    def solve_wF_vec(self,discrete=False):
-        """ solve model for vector of female wages """
-
-        pass
+        #Question 4
 
     def run_regression(self):
         """ run regression """
@@ -151,8 +149,14 @@ class HouseholdSpecializationModelClass:
         y = np.log(sol.HF_vec/sol.HM_vec)
         A = np.vstack([np.ones(x.size),x]).T
         sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0]
+
+    def obj_f(self):
+        alpha, sigma = x
+        return (par.beta0_target - sol.beta0)**2 + (par.beta1_target- sol.beta1)**2
+
+
     
-    def estimate(self,alpha=None,sigma=None):
+    def estimate(self,alpha=0.5,sigma=0.5):
         """ estimate alpha and sigma """
 
         pass
