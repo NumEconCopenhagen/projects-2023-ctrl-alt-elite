@@ -130,7 +130,7 @@ class HouseholdSpecializationModelClass:
 
         # call solver
         x0=[6,6,6,6]
-        result = optimize.minimize(self.obj, x0, method='Nelder-Mead', bounds=bounds, constraints=constraint_M, constraints= constraint_F)
+        result = optimize.minimize(self.obj, x0, method='Nelder-Mead', bounds=bounds, constraints=(constraint_M, constraint_F))
 
         sol.LM = result.x[0]
         sol.HM = result.x[1]
