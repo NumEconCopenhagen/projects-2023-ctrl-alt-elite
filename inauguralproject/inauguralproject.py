@@ -112,35 +112,41 @@ class HouseholdSpecializationModelClass:
         return opt
     
 
-    # Question 3
-    def obj(self, x): #objective function to maximize utility
-        LM, LF, HM, HF = x
-        return -self.calc_utility(LM, HM, LF, HF)
-        
-    def solve_cont(self):
+    # Question 3  
+    def solve_cont(self, do_print=False):
         """ solve model continously """
         par = self.par
         sol = self.sol
         opt = SimpleNamespace()
+        
+        def obj(x): #objective function to maximize utility
+            LM, HM, LF, HF = x
+            return -self.calc_utility(LM, HM, LF, HF)
 
         # constraints and bounds
         #time_constraint_M = lambda x: 24-x[0]-x[2]
         #time_constraint_F = lambda x: 24-x[1]-x[3]
-        #constraint_M = ({'type':'ineq', 'fun':time_constraint_M})
-        #constraint_F = ({'type':'ineq', 'fun':time_constraint_F})
-        #bounds = ([0,24],[0,24],[0,24],[0,24])
+        def constraints(x):
+            LM, HM, LF, HF = x
+            return [24 - LM-HM, 24 -LF-HF]
 
-        bounds = optimize.Bounds([0,0,0,0], [24,24,24,24])
-        constraints = optimize.LinearConstraint([[1,1,0,0], [0,0,1,1]], [0,0], [24,24])
+        constraints = ({'type':'ineq', 'fun' :constraints})
+
+        bounds = ((0,24),(0,24),(0,24),(0,24))
+
+        #bounds = optimize.Bounds([0,0,0,0], [24,24,24,24])
+        #constraints = optimize.LinearConstraint([[1,1,0,0], [0,0,1,1]], [0,0], [24,24])
 
         # call solver
         x0=[6,6,6,6]
-        result = optimize.minimize(self.obj, x0, method='trust-constr', bounds=bounds, constraints=constraints)
+        result = optimize.minimize(obj, x0, method='nelder-mead', bounds=bounds, constraints=constraints)
 
-        sol.LM = result.x[0]
-        sol.HM = result.x[1]
-        sol.LF = result.x[2]
-        sol.HF = result.x[3]
+        opt.LM = result.x[0]
+        opt.HM = result.x[1]
+        opt.LF = result.x[2]
+        opt.HF = result.x[3]
+
+        return opt
 
     #Question 4
     def solve_wF_vec(self,discrete=False):
@@ -157,10 +163,10 @@ class HouseholdSpecializationModelClass:
             else:
                 result = self.solve_cont()
             
-            sol.LF_vec[i] = result.LF
-            sol.HF_vec[i] = result.HF
             sol.LM_vec[i] = result.LM
             sol.HM_vec[i] = result.HM
+            sol.LF_vec[i] = result.LF
+            sol.HF_vec[i] = result.HF
 
     def run_regression(self):
         """ run regression """
@@ -174,12 +180,6 @@ class HouseholdSpecializationModelClass:
         sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0]
 
         return sol.beta0, sol.beta1
-
-
-    def obj_f(self):
-        alpha, sigma = x
-        return (par.beta0_target - sol.beta0)**2 + (par.beta1_target- sol.beta1)**2
-
 
     
     def estimate(self,alpha=0.5,sigma=0.5):
