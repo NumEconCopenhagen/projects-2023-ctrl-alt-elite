@@ -1,4 +1,4 @@
-# \[Group name\]
+# \[ctrl alt elite\]
 
 **Group members:**
 - Nina Madsen
