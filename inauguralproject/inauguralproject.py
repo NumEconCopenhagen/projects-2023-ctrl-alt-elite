@@ -168,6 +168,8 @@ class HouseholdSpecializationModelClass:
             sol.LF_vec[i] = result.LF
             sol.HF_vec[i] = result.HF
 
+        return sol
+
     def run_regression(self):
         """ run regression """
 
