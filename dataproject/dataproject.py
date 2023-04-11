@@ -1,16 +1,24 @@
-def keep_regs(df, regs):
-    """ Example function. Keep only the subset regs of regions in data.
+#Collecting data through Energinet's API
+response = requests.get(
+    url='https://api.energidataservice.dk/dataset/ProductionConsumptionSettlement?offset=0&start=2022-01-01T00:00&end=2023-01-01T00:00&sort=HourUTC%20DESC&timezone=dk'
+)
 
-    Args:
-        df (pd.DataFrame): pandas dataframe 
+result = response.json()
 
-    Returns:
-        df (pd.DataFrame): pandas dataframe
+for k, v in result.items():
+    print(k, v)
 
-    """ 
+    time.sleep(20)
+
+records = result.get('records', [])
+                                           
+print('records:')
+for record in records:
+    print(' ', record)
     
-    for r in regs:
-        I = df.reg.str.contains(r)
-        df = df.loc[I == False] # keep everything else
-    
-    return df
+result.keys()
+type(result['records'])
+
+# Convert to DataFrame
+df = pd.DataFrame(result['records'])
+
