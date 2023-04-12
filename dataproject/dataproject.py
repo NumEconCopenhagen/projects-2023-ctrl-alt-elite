@@ -25,4 +25,3 @@ type(result['records'])
 
 # Convert to DataFrame
 df = pd.DataFrame(result['records'])
-
