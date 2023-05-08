@@ -52,7 +52,7 @@ class OilSolowModelClass():
         val.g = 0.027    # technological progress rate
         val.beta =  0.6 
         val.etha = 0
-        val.phi =0
+        val.phi =1
     
         #simulation parameters
         par.simT =100  # 100 perioder
@@ -63,3 +63,21 @@ class OilSolowModelClass():
         sim.L = np.zeros(par.simT) # Workforce
         sim.A = np.zeros(par.simT) # total factor productivit
         sim.Y = np.zeros(par.simT) # Output - GDP
+    
+    def solve_climate_damage(self):
+        par = self.par
+        sim = self.sim
+        val = self.val
+
+        sim.R[0] = 1
+        for t in range(par.simT-1):
+            sim.E[t] = sim.R[t] * val.se
+            sim.R[t+1] = sim.R[t] * (1 - val.se)
+            sim.D[t] = 1 - ((sim.R[0] * (1 - val.se) ** t) / sim.R[t]) ** val.phi
+
+    def calculate_D_t(self, t=50, se=0.005, phi=1):
+        R_0 = 1 # initial value of R
+        R_t = R_0 * (1 - se) ** t
+        D_t = 1 - ((R_0 * (1 - se) ** t) / R_0) ** phi
+        return D_t
+
