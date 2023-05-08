@@ -81,4 +81,5 @@ class OilSolowModelClass():
         R_t = R_0 * (1 - se) ** t
         D_t = 1 - ((R_0 * (1 - se) ** t) / R_0) ** phi
         return D_t
+    
 
