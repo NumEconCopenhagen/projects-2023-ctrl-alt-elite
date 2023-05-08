@@ -63,7 +63,8 @@ class OilSolowModelClass():
         sim.L = np.zeros(par.simT) # Workforce
         sim.A = np.zeros(par.simT) # total factor productivit
         sim.Y = np.zeros(par.simT) # Output - GDP
-    
+
+    # How does climate damages develop over time and how much og the production is lost do to this?
     def solve_climate_damage(self):
         par = self.par
         sim = self.sim
