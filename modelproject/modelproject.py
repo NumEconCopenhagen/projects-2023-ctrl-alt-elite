@@ -64,6 +64,7 @@ class OilSolowModelClass():
         val.A_0 = 1         # initial total factor productivity
         val.R_0 = 1         # initial oil reserves
         val.e = 1
+       
 
     
         #simulation parameters
@@ -77,6 +78,7 @@ class OilSolowModelClass():
         sim.Y = np.zeros(par.simT) # Output - GDP
         sim.Phi = np.zeros(par.simT) # climate damage parameter
         sim.g = np.zeros(par.simT) # technological progress rate
+        sim.z = np.zeros(par.simT)
 
     def solve_steady_state(self):
         val = self.val
@@ -94,6 +96,8 @@ class OilSolowModelClass():
         sim = self.sim
         val = self.val
 
+        #looping over each period t
+
         sim.R[0] = 1
         for t in range(par.simT-1):
             sim.E[t] = sim.R[t] * val.se
@@ -109,7 +113,7 @@ class OilSolowModelClass():
     # find the size of phi
     def find(self):
        val = self.val
-
+       # growth rate equation with phi isolated
        phi = (val.beta + val.etha) * ((val.beta / (val.beta + val.etha)) * val.g - (val.etha / (val.beta + val.etha)) * val.n - (val.etha / (val.beta + val.etha)) * val.se) / (-1 * val.se)
        return abs(phi)
        sum = find()
@@ -131,4 +135,47 @@ class OilSolowModelClass():
         return abs(gy2)
         sum = balance_no_climate()
         print ("Phi= 0",balance_no_climate)
+
+    def simulate(self):
+        par = self.par
+        val = self.val
+        sim = self.sim
+
+        #simulating without climate change
+        val.phi = 0
+
+        #looping over each period
+        for t in range(par.simT-1):
+            if t ==0:
+            # setting values 
+            K_lag = 1
+            A_lag = 1
+            L_lag = 1
+            R_lag = 1
+            Z_lag = sim.Z[t-1]
+
+            # setting equations for period 0
+            L = sim.L[t] = L_lag
+            A = sim.A[t] = A_lag
+            K = sim.K[t] = K_lag
+            Z =sim.Z[t] = 
+
+            else: 
+                # setting the lagged values from period t=1 to t=100
+                K_lag = sim.K[t-1]
+                L_lag = sim.L[t-1]
+                A_lag = sim.A[t-1]
+                Z_lag = (1/(1-val.se)) **(val.etha + val.phi) * ( 1/((1+val.n)*(1+val.g))) ** val.beta * ((val.s+(1-val.delta)*sim.z[t])) **(1-val.alpha) * sim.z[t] ** val.alpha
+
+
+
+
+
+        sim.z = [0] * par.simT  # initialize sim.z
+
+        sim.z[0] = 1
+        for t in range(par.simT-1):
+        sim.z[t+1] = (1/(1-val.se)) **(val.etha + val.phi) * ( 1/((1+val.n)*(1+val.g))) ** val.beta * ((val.s+(1-val.delta)*sim.z[t])) **(1-val.alpha) * sim.z[t] ** val.alpha
+
+
 
