@@ -1,3 +1,4 @@
+from pyexpat import model
 from scipy import optimize
 import numpy as np
 import scipy.optimize as opt
@@ -99,6 +100,27 @@ class OilSolowModelClass():
         R_t = R_0 * (1 - se) ** t
         D_t = 1 - ((R_0 * (1 - se) ** t) / R_0) ** phi
         return D_t
-
+    
+       
+par = {
+    'alpha': 0.2,
+    'beta': 0.6,
+    'delta': 0.05,
+    's': 0.3,
+    'g': 0.027,
+    'n': 0.1,
+    'eta': 0.1,
+    'se': 0.005,
+    'phi': 0.5,
+    'k0': 1,
+    'l0': 1,
+    'a0': 1,
+    'r0': 1,
+    'T': 100
+ }
+model = OilSolowModelClass(par)
+par['phi'] = 0
+model.simulate_no_climate_change()
+k, y, c = model.simulate()
 
 
