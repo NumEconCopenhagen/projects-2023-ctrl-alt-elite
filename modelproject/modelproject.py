@@ -105,15 +105,13 @@ class OilSolowModelClass():
         D_t = 1 - ((R_0 * (1 - se) ** t) / R_0) ** phi
         return D_t
     
-
-
-    
+    # find the size of phi
     def find(self):
        val = self.val
 
        phi = (val.beta + val.etha) * ((val.beta / (val.beta + val.etha)) * val.g - (val.etha / (val.beta + val.etha)) * val.n - (val.etha / (val.beta + val.etha)) * val.se) / (-1 * val.se)
        return abs(phi)
        sum = find()
-       print(sum)
+       print("phi =",sum)
     
     
