@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from types import SimpleNamespace
 from tabulate import tabulate
 import ipywidgets as widgets
+from scipy.optimize import root_scalar
 from ipywidgets import interact, interactive, fixed, interact_manual
 
 class OilSolowModelClass():
@@ -61,6 +62,7 @@ class OilSolowModelClass():
         val.L_0 = 1         # initial labor force
         val.A_0 = 1         # initial total factor productivity
         val.R_0 = 1         # initial oil reserves
+        val.e = 1
 
     
         #simulation parameters
@@ -72,6 +74,8 @@ class OilSolowModelClass():
         sim.L = np.zeros(par.simT) # Workforce
         sim.A = np.zeros(par.simT) # total factor productivit
         sim.Y = np.zeros(par.simT) # Output - GDP
+        sim.Phi = np.zeros(par.simT) # climate damage parameter
+        sim.g = np.zeros(par.simT) # technological progress rate
 
     def solve_steady_state(self):
         val = self.val
@@ -101,26 +105,15 @@ class OilSolowModelClass():
         D_t = 1 - ((R_0 * (1 - se) ** t) / R_0) ** phi
         return D_t
     
-       
-par = {
-    'alpha': 0.2,
-    'beta': 0.6,
-    'delta': 0.05,
-    's': 0.3,
-    'g': 0.027,
-    'n': 0.1,
-    'eta': 0.1,
-    'se': 0.005,
-    'phi': 0.5,
-    'k0': 1,
-    'l0': 1,
-    'a0': 1,
-    'r0': 1,
-    'T': 100
- }
-model = OilSolowModelClass(par)
-par['phi'] = 0
-model.simulate_no_climate_change()
-k, y, c = model.simulate()
 
 
+    
+    def find(self):
+       val = self.val
+
+       phi = (val.beta + val.etha) * ((val.beta / (val.beta + val.etha)) * val.g - (val.etha / (val.beta + val.etha)) * val.n - (val.etha / (val.beta + val.etha)) * val.se) / (-1 * val.se)
+       return abs(phi)
+       sum = find()
+       print(sum)
+    
+    
