@@ -64,6 +64,7 @@ class OilSolowModelClass():
         val.A_0 = 1         # initial total factor productivity
         val.R_0 = 1         # initial oil reserves
         val.e = 1
+        val.Y_0 = 1
        
 
     
@@ -103,6 +104,7 @@ class OilSolowModelClass():
             sim.E[t] = sim.R[t] * val.se
             sim.R[t+1] = sim.R[t] * (1 - val.se)
             sim.D[t] = 1 - ((sim.R[0] * (1 - val.se) ** t) / sim.R[t]) ** val.phi
+            # calculate output Y
 
     def calculate_D_t(self, t=50, se=0.005, phi=1):
         R_0 = 1 # initial value of R
@@ -136,46 +138,44 @@ class OilSolowModelClass():
         sum = balance_no_climate()
         print ("Phi= 0",balance_no_climate)
 
-    def simulate(self):
+    def solve_output(self): 
         par = self.par
-        val = self.val
         sim = self.sim
+        val = self.val
 
-        #simulating without climate change
-        val.phi = 0
+        # Initial values
+        val.k_0 = 1.0
+        val.e_0 = 1.0
+        val.A_0 = 1.0
+        val.Y_0 = sim.Y[t] = (1 - sim.D[t]) * sim.k[t] ** val.alpha * sim.A[t] ** val.beta * val.e ** val.etha 
 
-        #looping over each period
-        for t in range(par.simT-1):
-            if t ==0:
-            # setting values 
-            K_lag = 1
-            A_lag = 1
-            L_lag = 1
-            R_lag = 1
-            Z_lag = sim.Z[t-1]
+        # Number of periods to simulate
+        T = 100
 
-            # setting equations for period 0
-            L = sim.L[t] = L_lag
-            A = sim.A[t] = A_lag
-            K = sim.K[t] = K_lag
-            Z =sim.Z[t] = 
+        #         Arrays to store the results
+        sim.k = np.zeros(T+1)
+        sim.A = np.zeros(T+1)
+        sim.Y = np.zeros(T+1)
 
-            else: 
-                # setting the lagged values from period t=1 to t=100
-                K_lag = sim.K[t-1]
-                L_lag = sim.L[t-1]
-                A_lag = sim.A[t-1]
-                Z_lag = (1/(1-val.se)) **(val.etha + val.phi) * ( 1/((1+val.n)*(1+val.g))) ** val.beta * ((val.s+(1-val.delta)*sim.z[t])) **(1-val.alpha) * sim.z[t] ** val.alpha
+        sim.k[0] = val.k_0
+        sim.L[0] = val.L_0
+        sim.A[0] = val.A_0
+        sim.Y[0] = val.Y_0
 
+        # Simulate the model
+        for t in range(T):
+            sim.Y[t] = sim.A[t] * (sim.k[t]**val.alpha) * (sim.L[t]**(1-val.alpha))
+            sim.k[t+1] = val.s * sim.Y[t] * (1-val.delta) + (1-val.delta) * sim.k[t]
+            sim.L[t+1] = (1+val.n) * sim.L[t]
+            sim.A[t+1] = (1+val.g) * sim.A[t]
 
-
-
-
-        sim.z = [0] * par.simT  # initialize sim.z
-
-        sim.z[0] = 1
-        for t in range(par.simT-1):
-        sim.z[t+1] = (1/(1-val.se)) **(val.etha + val.phi) * ( 1/((1+val.n)*(1+val.g))) ** val.beta * ((val.s+(1-val.delta)*sim.z[t])) **(1-val.alpha) * sim.z[t] ** val.alpha
-
+        # Plot the output over time
+        fig, ax = plt.subplots()
+        ax.plot(range(T+1), sim.Y)
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Output')
+        ax.set_title('Output over Time')
+        plt.show()
 
 
+      
