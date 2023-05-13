@@ -58,7 +58,7 @@ class OilSolowModelClass():
         val.g = 0.027    # technological progress rate
         val.beta =  0.6   # labor share of output
         val.etha = 0.2    # energy share of output
-        val.phi = 0.5   # climate damage parameter
+        val.phi = 0.5  # climate damage parameter
         val.phi2 = 0
         val.k_0 = 1         # initial capital stock
         val.L_0 = 1         # initial labor force
@@ -87,7 +87,43 @@ class OilSolowModelClass():
         sim.fracYDgrowth = np.zeros(par.simT)
         sim.fracY_ext = np.zeros(par.simT)
 
-    
+    def simulate (self, Phi_param):
+         #function that makes a simulation of all scenarios 
+
+         par = self.par
+         val = self.val
+         sim = self.sim
+
+         # looping over each period t
+         for t in range(par.simT):
+            if t == 0: 
+                #Setting values and equations common for all simulations in period 0. 
+                K_lag = 1
+                L_lag = 1
+                A_lag = 1
+                R_lag = 1 
+                D_lag = 1- (val.R /R_lag)**val.phi
+                E_lag = val.s_E*R_lag
+                Y_lag = (1 - D_lag) * K_lag** val.alpha *(A_lag*L_lag)**val.beta*E_lag**val.etha
+
+
+                L = sim.L[t] = L_lag
+                A = sim.A[t] = A_lag
+
+                # setting the values for period 0
+                if phi_param == 0:
+                    # Setting the equations for period 0
+                    D_lag = 1- (val.R /R_lag)**phi_param
+                    
+
+
+
+       
+
+
+
+
+
     def simulate1(self):
         par = self.par
         val = self.val
@@ -288,7 +324,7 @@ class OilSolowModelClass():
     def balance_climate(self):
         val = self.val
 
-        gy =  (( val.beta)/ (val.beta + val.etha) )* val.g - ((val.etha)/(val.beta + val.etha)) * val.n - ((val.etha)/(val.beta + val.etha)) * val.se - ((val.phi)/(val.beta + val.etha)) * val.se
+        gy =  (( val.beta)/ (val.beta + val.etha) )* val.g - ((val.etha)/(val.beta + val.etha)) * val.n - ((val.etha)/(val.beta + val.etha)) * val.s_E - ((val.phi)/(val.beta + val.etha)) * val.s_E
         return abs(gy)
         sum = balance_climate()
         print ("Phi= 0.5",balance_climate)
@@ -296,7 +332,7 @@ class OilSolowModelClass():
     def balance_no_climate(self):
         val = self.val
 
-        gy2 =  (( val.beta)/ (val.beta + val.etha) )* val.g - ((val.etha)/(val.beta + val.etha)) * val.n - ((val.etha)/(val.beta + val.etha)) * val.se - ((val.phi2)/(val.beta + val.etha)) * val.se
+        gy2 =  (( val.beta)/ (val.beta + val.etha) )* val.g - ((val.etha)/(val.beta + val.etha)) * val.n - ((val.etha)/(val.beta + val.etha)) * val.s_E - ((val.phi2)/(val.beta + val.etha)) * val.s_E
         return abs(gy2)
         sum = balance_no_climate()
         print ("Phi= 0",balance_no_climate)
