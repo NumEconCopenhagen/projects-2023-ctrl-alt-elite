@@ -1,6 +1,6 @@
 # Model analysis project
 
-Our project is titled **PROJECT TITLE** and is about EXPLAIN.
+Our project is titled **The Solow model with Oil and climate change** and is a project about the solow growth model that incorporates oil and climate change.
 
 The **results** of the project can be seen from running [modelproject.ipynb](modelproject.ipynb).
 
