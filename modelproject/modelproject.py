@@ -117,15 +117,15 @@ class OilSolowModelClass():
              E =sim.E[t] = val.s_E* R_lag
              Y = sim.Y[t] = (1-sim.D[t]) * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
 
-        else:
+            else:
             # setting the lagged values from period t=1 to t=100
-             A_lag = sim.A[t-1]
-             K_lag = sim.K[t-1]
-             L_lag = sim.L[t-1]
-             R_lag = sim.R[t-1]
-             D_lag = sim.D[t-1]
-             E_lag = sim.E[t-1]
-             Y_lag = sim.Y[t-1]
+             A_lag = sim.A[t-1] = (1+val.g)*A_lag
+             K_lag = sim.K[t-1] = val.s*sim.Y[t-1] +(1-val.delta)*K_lag
+             L_lag = sim.L[t-1] = (1+val.n)*L_lag
+             R_lag = sim.R[t-1] = R_lag - sim.E[t-1]
+             D_lag = sim.D[t-1] = 1- (sim.R[t-1] /R_lag)**val.phi
+             E_lag = sim.E[t-1] = val.s_E* sim.R[t-1]
+             Y_lag = sim.Y[t-1] = (1-sim.D[t-1]) * sim.K[t-1]**val.alpha * (sim.A[t-1]*sim.L[t-1])**val.beta * sim.E[t-1]**val.etha
 
             # the model equations for period t = 1 to t = 100
              A = sim.A[t] = (1+val.g)*A_lag
@@ -168,15 +168,16 @@ class OilSolowModelClass():
              E =sim.E[t] = val.s_E* R_lag
              Y = sim.Y[t] = (1-sim.D[t]) * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
 
-        else:
+            else:
             # setting the lagged values from period t=1 to t=100
-             A_lag = sim.A[t-1]
-             K_lag = sim.K[t-1]
-             L_lag = sim.L[t-1]
-             R_lag = sim.R[t-1]
-             D_lag = sim.D[t-1]
-             E_lag = sim.E[t-1]
-             Y_lag = sim.Y[t-1]
+             A_lag = sim.A[t-1] = (1+val.g)*A_lag
+             K_lag = sim.K[t-1] = val.s*sim.Y[t-1] +(1-val.delta)*K_lag
+             L_lag = sim.L[t-1] = (1+val.n)*L_lag
+             R_lag = sim.R[t-1] = R_lag - sim.E[t-1]
+             D_lag = sim.D[t-1] = 1- (sim.R[t-1] /R_lag)**val.phi
+             E_lag = sim.E[t-1] = val.s_E* sim.R[t-1]
+             Y_lag = sim.Y[t-1] = (1-sim.D[t-1]) * sim.K[t-1]**val.alpha * (sim.A[t-1]*sim.L[t-1])**val.beta * sim.E[t-1]**val.etha
+
 
             # the model equations for period t = 1 to t = 100
              A = sim.A[t] = (1+val.g)*A_lag
@@ -219,15 +220,16 @@ class OilSolowModelClass():
              E =sim.E[t] = val.s_E* R_lag
              Y = sim.Y[t] = (1-sim.D[t]) * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
 
-        else:
+            else:
             # setting the lagged values from period t=1 to t=100
-             A_lag = sim.A[t-1]
-             K_lag = sim.K[t-1]
-             L_lag = sim.L[t-1]
-             R_lag = sim.R[t-1]
-             D_lag = sim.D[t-1]
-             E_lag = sim.E[t-1]
-             Y_lag = sim.Y[t-1]
+             A_lag = sim.A[t-1] = (1+val.g)*A_lag
+             K_lag = sim.K[t-1] = val.s*sim.Y[t-1] +(1-val.delta)*K_lag
+             L_lag = sim.L[t-1] = (1+val.n)*L_lag
+             R_lag = sim.R[t-1] = R_lag - sim.E[t-1]
+             D_lag = sim.D[t-1] = 1- (sim.R[t-1] /R_lag)**val.phi
+             E_lag = sim.E[t-1] = val.s_E* sim.R[t-1]
+             Y_lag = sim.Y[t-1] = (1-sim.D[t-1]) * sim.K[t-1]**val.alpha * (sim.A[t-1]*sim.L[t-1])**val.beta * sim.E[t-1]**val.etha
+
 
             # the model equations for period t = 1 to t = 100
              A = sim.A[t] = (1+val.g)*A_lag
@@ -240,34 +242,6 @@ class OilSolowModelClass():
     
           # calculating the relative growth in GDP with growing climate change 
         sim.fracYDgrowth[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
-
-
-
-
-    
-        
-
-        
-
-        
-
-        
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
 
 
     def solve_steady_state(self):
