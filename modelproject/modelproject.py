@@ -87,42 +87,6 @@ class OilSolowModelClass():
         sim.fracYDgrowth = np.zeros(par.simT)
         sim.fracY_ext = np.zeros(par.simT)
 
-    def simulate (self, Phi_param):
-         #function that makes a simulation of all scenarios 
-
-         par = self.par
-         val = self.val
-         sim = self.sim
-
-         # looping over each period t
-         for t in range(par.simT):
-            if t == 0: 
-                #Setting values and equations common for all simulations in period 0. 
-                K_lag = 1
-                L_lag = 1
-                A_lag = 1
-                R_lag = 1 
-                D_lag = 1- (val.R /R_lag)**val.phi
-                E_lag = val.s_E*R_lag
-                Y_lag = (1 - D_lag) * K_lag** val.alpha *(A_lag*L_lag)**val.beta*E_lag**val.etha
-
-
-                L = sim.L[t] = L_lag
-                A = sim.A[t] = A_lag
-
-                # setting the values for period 0
-                if phi_param == 0:
-                    # Setting the equations for period 0
-                    D_lag = 1- (val.R /R_lag)**phi_param
-                    
-
-
-
-       
-
-
-
-
 
     def simulate1(self):
         par = self.par
