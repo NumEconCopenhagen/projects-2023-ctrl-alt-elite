@@ -16,7 +16,7 @@ from ipywidgets import interact, interactive, fixed, interact_manual
 
 class OilSolowModelClass():
     def __init__(self,do_print=True):
-        """create the model"""
+        """create the model yay"""
 
         if do_print: print('initializing the model')
 
