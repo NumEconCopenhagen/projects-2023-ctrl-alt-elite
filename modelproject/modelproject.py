@@ -264,9 +264,9 @@ class OilSolowModelClass():
 
         sim.R[0] = 1
         for t in range(par.simT-1):
-            sim.E[t] = sim.R[t] * val.se
-            sim.R[t+1] = sim.R[t] * (1 - val.se)
-            sim.D[t] = 1 - ((sim.R[0] * (1 - val.se) ** t) / sim.R[t]) ** val.phi
+            sim.E[t] = sim.R[t] * val.s_E
+            sim.R[t+1] = sim.R[t] * (1 - val.s_E)
+            sim.D[t] = 1 - ((sim.R[0] * (1 - val.s_E) ** t) / sim.R[t]) ** val.phi
             # calculate output Y
 
     def calculate_D_t(self, t=50, se=0.005, phi=1):
@@ -279,7 +279,7 @@ class OilSolowModelClass():
     def find(self):
        val = self.val
        # growth rate equation with phi isolated
-       phi = (val.beta + val.etha) * ((val.beta / (val.beta + val.etha)) * val.g - (val.etha / (val.beta + val.etha)) * val.n - (val.etha / (val.beta + val.etha)) * val.se) / (-1 * val.se)
+       phi = (val.beta + val.etha) * ((val.beta / (val.beta + val.etha)) * val.g - (val.etha / (val.beta + val.etha)) * val.n - (val.etha / (val.beta + val.etha)) * val.s_E) / (-1 * val.s_E)
        return abs(phi)
        sum = find()
        print("phi =",sum)
