@@ -8,5 +8,5 @@
 This repository contains  
 1. Inaugural project. 
 2. Data project. In this project, we import, clean, analyze and visualize data. We fetch data from Energinet Danmark and show the generation of renewable energy in Denmark in 2022. 
-3. Model project. In this project we model the Solow model.
+3. Model project. In this project we model the Solow growth model and incorporate oil and climate change.
 4. Exam project. 
