@@ -1,4 +1,5 @@
 
+# Imports
 from types import SimpleNamespace
 
 import numpy as np
@@ -7,6 +8,7 @@ from scipy import optimize
 import pandas as pd 
 import matplotlib.pyplot as plt
 
+# Define class
 class HouseholdSpecializationModelClass:
 
     def __init__(self):
@@ -124,8 +126,6 @@ class HouseholdSpecializationModelClass:
             return -self.calc_utility(LM, HM, LF, HF)
 
         # constraints and bounds
-        #time_constraint_M = lambda x: 24-x[0]-x[2]
-        #time_constraint_F = lambda x: 24-x[1]-x[3]
         def constraints(x):
             LM, HM, LF, HF = x
             return [24 - LM-HM, 24 -LF-HF]
@@ -133,9 +133,6 @@ class HouseholdSpecializationModelClass:
         constraints = ({'type':'ineq', 'fun' :constraints})
 
         bounds = ((0,24),(0,24),(0,24),(0,24))
-
-        #bounds = optimize.Bounds([0,0,0,0], [24,24,24,24])
-        #constraints = optimize.LinearConstraint([[1,1,0,0], [0,0,1,1]], [0,0], [24,24])
 
         # call solver
         x0=[6,6,6,6]
