@@ -1,6 +1,6 @@
 # Data analysis project
 
-Our project is titled ***The relationship between renewable electricity generation and demand in Denmark*** and is about how much megawatt per hour the different electricity generation types produce. We look at gross consumption, offshore windfarms, onshore windfarms, solar power and hydro power.
+Our project, titled ***'The Relationship between Renewable Electricity Generation and Demand in Denmark,'*** focuses on analyzing the megawatt per hour (MWh) production of various electricity generation types. We explore the relationship between gross consumption and the generation from offshore wind farms, onshore wind farms, solar power, and hydro power. By examining these factors, we aim to gain insights into the dynamics and interplay between renewable energy generation and electricity demand in Denmark.".
 
 The **results** of the project can be seen from running [dataproject.ipynb](dataproject.ipynb).
 
