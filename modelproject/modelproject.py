@@ -137,7 +137,8 @@ class OilSolowModelClass():
              Y = sim.Y[t] = 1-sim.D[t] * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
     
         # calculating the relative growth in GDP
-        sim.fracY[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
+            sim.fracY[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
+        
     
     def simulate2(self):
         par = self.par
@@ -189,7 +190,7 @@ class OilSolowModelClass():
              Y = sim.Y[t] = 1-sim.D[t] * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
     
         # calculating the relative growth in GDP with climate change  
-        sim.fracYD[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
+            sim.fracYD[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
     
     def simulate3(self):
         par = self.par
@@ -241,7 +242,7 @@ class OilSolowModelClass():
              Y = sim.Y[t] = 1-sim.D[t] * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
     
           # calculating the relative growth in GDP with growing climate change 
-        sim.fracYDgrowth[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
+            sim.fracYDgrowth[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
 
 
     def solve_steady_state(self):
