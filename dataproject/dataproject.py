@@ -9,19 +9,25 @@ response = requests.get(
 
 result = response.json()
 
+# Limit the output to a certain number of records
+limit = 10
+records = result.get('records', [])[:limit]
+
+for record in records:
+    print(' ', record)
+
 for k, v in result.items():
     print(k, v)
 
     time.sleep(20)
 
 records = result.get('records', [])
-                                           
-print('records:')
-for record in records:
-    print(' ', record)
 
 result.keys()
 type(result['records'])
 
 # Convert to DataFrame
 df = pd.DataFrame(result['records'])
+
+# Display the first few rows of the DataFrame
+print(df.head())
