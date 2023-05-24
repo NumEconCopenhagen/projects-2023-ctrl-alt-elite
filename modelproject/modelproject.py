@@ -102,7 +102,7 @@ class OilSolowModelClass():
              A_lag = 1
              K_lag = 1 
              L_lag = 1 
-             R_lag = 1 
+             R_lag = val.R 
              D_lag = 1- (val.R /R_lag)**val.phi
              E_lag = val.s_E*R_lag
              Y_lag = (1 - D_lag) * K_lag** val.alpha *(A_lag*L_lag)**val.beta*E_lag**val.etha
@@ -154,7 +154,7 @@ class OilSolowModelClass():
              A_lag = 1
              K_lag = 1 
              L_lag = 1 
-             R_lag = 1 
+             R_lag = val.R 
              D_lag = 1- (val.R /R_lag)**val.phi
              E_lag = val.s_E*R_lag
              Y_lag = (1 - D_lag) * K_lag** val.alpha *(A_lag*L_lag)**val.beta*E_lag**val.etha
@@ -206,7 +206,7 @@ class OilSolowModelClass():
              A_lag = 1
              K_lag = 1 
              L_lag = 1 
-             R_lag = 1 
+             R_lag = val.R 
              D_lag = 1- (val.R /R_lag)**val.phi
              E_lag = val.s_E*R_lag
              Y_lag = (1 - D_lag) * K_lag** val.alpha *(A_lag*L_lag)**val.beta*E_lag**val.etha
