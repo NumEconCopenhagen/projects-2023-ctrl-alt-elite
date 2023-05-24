@@ -134,7 +134,7 @@ class OilSolowModelClass():
              R = sim.R[t] = R_lag - E_lag
              D = sim.D[t] = 1- (val.R /R_lag)**val.phi
              E = sim.E[t] = val.s_E* R_lag
-             Y = sim.Y[t] = 1-sim.D[t] * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
+             Y = sim.Y[t] =( 1-sim.D[t]) * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
     
         # calculating the relative growth in GDP
             sim.fracY[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
@@ -187,7 +187,7 @@ class OilSolowModelClass():
              R = sim.R[t] = R_lag - E_lag
              D = sim.D[t] = 1- (val.R /R_lag)**val.phi
              E = sim.E[t] = val.s_E* R_lag
-             Y = sim.Y[t] = 1-sim.D[t] * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
+             Y = sim.Y[t] = (1-sim.D[t]) * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
     
         # calculating the relative growth in GDP with climate change  
             sim.fracYD[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
@@ -239,7 +239,7 @@ class OilSolowModelClass():
              R = sim.R[t] = R_lag - E_lag
              D = sim.D[t] = 1- (val.R /R_lag)**val.phi
              E = sim.E[t] = val.s_E* R_lag
-             Y = sim.Y[t] = 1-sim.D[t] * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
+             Y = sim.Y[t] = (1-sim.D[t]) * sim.K[t]** val.alpha *(sim.A[t]*sim.L[t])**val.beta*sim.E[t]**val.etha
     
           # calculating the relative growth in GDP with growing climate change 
             sim.fracYDgrowth[t] = (sim.Y[t]/sim.L[t])/(sim.Y[0]/sim.L[0])
