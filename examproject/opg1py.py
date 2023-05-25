@@ -26,25 +26,26 @@ class ConsModel():
         par = self.par
         val = self.val
 
-        par.L = sm.symbols('L')
+        par.L = sm.symbols('L', positive=True)
         par.C = sm.symbols('C')
-        par.G = sm.symbols('G')
+        par.G = sm.symbols('G', positive=True)
 
         par.alpha = sm.symbols('alpha')
-        par.kappa = sm.symbols('kappa')
-        par.v = sm.symbols('v')
-        par.w = sm.symbols('w')
+        par.kappa = sm.symbols('kappa', positive=True)
+        par.v = sm.symbols('v', positive=True)
+        par.w = sm.symbols('w', positive=True)
         par.tau = sm.symbols('tau')
-        par.w = sm.symbols('w')
+        par.wtilde = sm.symbols('wtilde')
 
     def solve_analytical(self):
         par = self.par
+        
         # Define the utility function:
         V_func = sm.log(par.C**par.alpha * par.G**(1-par.alpha))-par.v*(par.L**2)/2
 
         # Define the consumption function:
-        #w_tilde = (1-par.tau) * par.w
-        C_func = par.kappa+par.w*par.L
+        #par.w_tilde = (1-par.tau) * par.w
+        C_func = par.kappa+par.wtilde*par.L
 
         #Substitute the consumption function into the utility function
         V_sub = V_func.subs(par.C, C_func)
@@ -59,9 +60,29 @@ class ConsModel():
         # Print the optimal labor input
         #print("Optimal Labor Input (L):", optimal_L)
         return optimal_L
+    
+    def plot1(self):
 
-  #val.alpha = 0.5
-        #val.kappa = 1
-        #val.v = 1/(2*16**2)
-        #val.w = 1
-        #val.tau = 0.3
+        par = self.par
+
+        # Set the range of w values
+        w_values = np.linspace(0.00001,6,100)
+
+        # Create an empty list to store results
+        optimal_L_values =[]
+
+        # Iterate over w values
+        for w in w_values:
+            par.wtilde = (1 - par.tau) * w
+            optimal_L = self.solve_analytical()
+            optimal_L_values.append(optimal_L[0])
+
+        # Plot the result
+        plt.plot(w_values, optimal_L_values)
+        plt.xlabel('w')
+        plt.ylabel('L')
+        plt.title('Optimal Labor Input as a Function of w')
+        plt.grid(True)
+        plt.show()
+ 
+
