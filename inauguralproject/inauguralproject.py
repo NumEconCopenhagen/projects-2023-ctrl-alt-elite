@@ -184,4 +184,70 @@ class HouseholdSpecializationModelClass:
     def estimate(self,alpha=0.5,sigma=0.5):
         """ estimate alpha and sigma """
 
-        pass
+        par = self.par
+        sol = self.sol
+
+        # Set the desired alpha and sigma
+        par.alpha = alpha
+        par.sigma = sigma
+
+       # Solve the model for the vector of female wages in continuous time
+        result = self.solve_wF_vec(discrete=False)
+
+        # Perform the regression
+        x = np.log(par.wF_vec)
+        y = np.log(result.HF_vec / result.HM_vec)
+        A = np.vstack([np.ones(x.size), x]).T
+        sol.beta0, sol.beta1 = np.linalg.lstsq(A, y, rcond=None)[0]
+
+        # Plot the results
+        fig, ax = plt.subplots()
+        ax.scatter(x, y, color='blue', label='Data')
+        ax.plot(x, A.dot([sol.beta0, sol.beta1]), color='red', label='Regression Line')
+        ax.set_xlabel('log(wF)')
+        ax.set_ylabel('log(HF/HM)')
+        ax.set_title('Regression: log(HF/HM) vs. log(wF)')
+        ax.legend()
+        
+
+        
+        print( sol.beta0, sol.beta1)
+        plt.show()
+        
+
+    def solve_wF_alpha(self, discrete=False):
+     """ Solve model for vector of female wages """
+     par = self.par
+     sol = self.sol
+
+     for i, wF in enumerate(par.wF_vec):
+         par.wF = wF
+
+          # Set alpha to 0.5
+         par.alpha = 0.5
+
+         if discrete:
+             result = self.solve_discrete()
+         else:
+             result = self.solve_cont()
+
+         sol.LM_vec[i] = result.LM
+         sol.HM_vec[i] = result.HM
+         sol.LF_vec[i] = result.LF
+         sol.HF_vec[i] = result.HF
+
+         return sol
+
+    def run_regression_alpha(self):
+     """ Run regression """
+     par = self.par
+     sol = self.sol
+
+     x = np.log(par.wF_vec)
+     y = np.log(sol.HF_vec / sol.HM_vec)
+     A = np.vstack([np.ones(x.size), x]).T
+     sol.beta0, sol.beta1 = np.linalg.lstsq(A, y, rcond=None)[0]
+
+     return sol.beta0, sol.beta1
+
+        
