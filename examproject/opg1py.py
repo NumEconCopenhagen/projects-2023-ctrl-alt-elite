@@ -157,7 +157,7 @@ class ConsModel():
         optimal_L = optimal_L.subs(par.wtilde, (1 - par.tau) * par.w)
         return optimal_L
     
-    def insert_func(self):
+    def optimal_tax(self):
         par = self.par
 
         par.alpha = 0.5
@@ -174,7 +174,11 @@ class ConsModel():
         V_func = sm.log(Cl**par.alpha * Gl**(1 - par.alpha)) - par.v * (par.L**2) / 2
         Vl = V_func.subs(par.L, L_opt)
 
-        return -Vl  
+        diff_Vl = sm.diff(Vl, par.tau)
+
+        opt_tau= sm.solve(diff_Vl, par.tau)
+
+        return opt_tau
     
     def max_util(self):
 
