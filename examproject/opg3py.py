@@ -1,16 +1,19 @@
+# Import the necessary packages
 import numpy as np
 from scipy.optimize import minimize
 
+# Define the Griewank function
 def griewank(x):
     return griewank_(x[0],x[1])
-    
+
 def griewank_(x1,x2):
     A = x1**2/4000 + x2**2/4000
     B = np.cos(x1/np.sqrt(1))*np.cos(x2/np.sqrt(2))
     return A-B+1
 
+# Define the optimizer
 def refined_global_optimizer(bounds, tolerance, warmup_iterations, max_iterations):
-    # Set the seed for the random uniform distribution
+    # Set the seed for the random uniform distribution to ensure reproducibility
     np.random.seed(101)
 
     # Define current best solution and its corresponding initial guess
