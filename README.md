@@ -2,8 +2,8 @@
 
 **Group members:**
 - Nina Madsen | KU-id: nrj191
-- Natacha Andersen | KU-id: 
-- Emilie Østergaard Knudsen | KU-id: 
+- Natacha Andersen | KU-id: gzm623
+- Emilie Østergaard Knudsen | KU-id: slh482
 
 This repository contains  
 1. Inaugural project. 
