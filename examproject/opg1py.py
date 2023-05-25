@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import optimize
+from scipy.optimize import minimize_scalar
 import sympy as sm
 from sympy import Symbol
 from sympy.solvers import solve
@@ -22,9 +23,8 @@ class ConsModel():
         self.setup()
     
     def setup(self):
-        """define the baseline parameters of the Solow model"""
+        """define the baseline parameters of the model"""
         par = self.par
-        val = self.val
 
         par.L = sm.symbols('L', nonnegative=True)
         par.C = sm.symbols('C', nonnegative=True)
@@ -52,10 +52,10 @@ class ConsModel():
 
         # Calculate the first derivative of the utility function with respect to L
         dV_dL = sm.diff(V_sub, par.L)
-        eq = sm.Eq(dV_dL,0)
+        #eq = sm.Eq(dV_dL,0)
 
         # Solve the first-order condition
-        optimal_L = sm.solve(eq, par.L)
+        optimal_L = sm.solve(dV_dL, par.L)
 
         return optimal_L
     
@@ -95,11 +95,6 @@ class ConsModel():
         G_func_values =[]
         V_func_values =[]
         C_func_values =[]
-
-        par.alpha = 0.5
-        par.kappa = 1
-        par.v = 1/(2*(16**2))
-        par.w = 1
 
         # Iterate over tau values
         for tau in tau_values:
@@ -155,5 +150,86 @@ class ConsModel():
         # Display the plots
         plt.tight_layout()
         plt.show()
- 
+    
+    def optimal_labour(self): #replace wtilde
+        par = self.par
+        optimal_L = self.solve_analytical()[0]
+        optimal_L = optimal_L.subs(par.wtilde, (1 - par.tau) * par.w)
+        return optimal_L
+    
+    def insert_func(self):
+        par = self.par
+
+        par.alpha = 0.5
+        par.kappa = 1
+        par.v = 1/(2*(16**2))
+        par.w = 1
+        L_opt = self.optimal_labour()
+        C_func = par.kappa + (1 - par.tau) * par.w*par.L
+        Cl = C_func.subs(par.L, L_opt)
+
+        G_func = par.tau * par.w * par.L * (1 - par.tau) * par.w
+        Gl = G_func.subs(par.L, L_opt)
+
+        V_func = sm.log(Cl**par.alpha * Gl**(1 - par.alpha)) - par.v * (par.L**2) / 2
+        Vl = V_func.subs(par.L, L_opt)
+
+        return -Vl  
+    
+    def max_util(self):
+
+        obj = self.optimal_labour()
+
+        # Optimize the objective function to find the optimal value of tau
+        result = optimize.minimize_scalar(self.insert_func, bounds=(0.01, 0.99), method='bounded')
+
+        optimal_tau = result.x
+
+        return optimal_tau
+    
+    def discrete_min_util(self):
+        par = self.par
+
+        # Define the objective function
+        def objective_func(tau):
+            par.tau = tau
+
+            L_opt = self.solve_analytical()[0]
+
+            C_func = par.kappa + (1 - par.tau) * par.w * L_opt
+            Cl = C_func.subs(par.L, L_opt)
+
+            G_func = par.tau * par.w * L_opt * (1 - par.tau) * par.w
+            Gl = G_func.subs(par.L, L_opt)
+
+            V_func = sm.log(Cl**par.alpha * Gl**(1 - par.alpha)) - par.v * (L_opt**2) / 2
+            Vl = V_func.subs(par.L, L_opt)
+
+            return -Vl
+
+        # Set the discrete values for par.tau
+        tau_values = np.linspace(0.01, 0.99, 100)
+
+        # Evaluate the objective function for each tau value
+        objective_values = [objective_func(tau) for tau in tau_values]
+
+        # Find the index of the minimum objective value
+        min_index = np.argmin(objective_values)
+
+        # Obtain the optimal tau value
+        optimal_tau = tau_values[min_index]
+
+        return optimal_tau
+
+
+    
+
+
+
+    
+
+            
+
+
+
 
