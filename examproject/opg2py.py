@@ -37,7 +37,8 @@ class ProfitClass():
         val.eta = 0.5
         val.kappa = 1.0
         val.w = 1.0
-
+        val.ell_t = sm.symbols('ell_t') 
+        
     def solve_numerical_kappa1(self):
         par = self.par
         val = self.val
@@ -57,6 +58,9 @@ class ProfitClass():
         optimal_ell_val = optimal_ell.subs([(val.kappa, val.kappa), (val.eta, val.eta), (val.w, val.w)])
         
         optimal_ell_val
+
+        print("Optimal ell_t value for kappa = 1.0:", optimal_ell_val)
+
     
     def solve_numerical_kappa2(self):
         par = self.par
@@ -77,3 +81,5 @@ class ProfitClass():
         optimal_ell_val = optimal_ell.subs([(val.kappa, val.kappa), (val.eta, val.eta), (val.w, val.w)])
         
         optimal_ell_val
+
+        print("Optimal ell_t value for kappa = 2.0:", optimal_ell_val)
