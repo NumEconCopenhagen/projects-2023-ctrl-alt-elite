@@ -151,16 +151,8 @@ class ProfitClass():
 
         average_H = np.mean(results)
         return average_H
-       
-         
-    def K(self):
-         
-       K_values = [100, 1000, 10000, 100000]
 
-       for K in K_values:
-          average_H = profit_model.calculate_H(K)
-          print(f"Average H for K={K}: {average_H}")
-    
+
 
     
     
