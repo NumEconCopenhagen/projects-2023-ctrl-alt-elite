@@ -32,12 +32,22 @@ class ProfitClass():
         par.w = sm.symbols('w')
         par.ell_t = sm.symbols('ell_t')
         par.Pi = sm.symbols('Pi')
+        par.rho = sm.symbols('rho')
+        par.iota = sm.symbols('iota')
+        par.sigma_epsilon = sm.symbols('sigma_epsilon')
+        par.R = sm.symbols('R')
 
 
         val.eta = 0.5
         val.kappa = 1.0
         val.w = 1.0
         val.ell_t = sm.symbols('ell_t') 
+        val.rho = 0.90
+        val.iota = 0.01
+        val.sigma_epsilon = 0.10   
+        val.R = (1 + 0.01) ** (1 / 12) 
+        
+        sim.T = 120
         
     def solve_numerical_kappa1(self):
         par = self.par
@@ -83,3 +93,14 @@ class ProfitClass():
         optimal_ell_val
 
         print("Optimal ell_t value for kappa = 2.0:", optimal_ell_val)
+
+    def calculate_H(self):
+        par = self.par
+        val = self.val
+        sim = self.sim
+
+    
+    
+
+
+        
