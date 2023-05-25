@@ -219,7 +219,42 @@ class ConsModel():
         # Obtain the optimal tau value
         optimal_tau = tau_values[min_index]
 
-        return optimal_tau
+        return self.objective_func()
+    
+    def plotC(self):
+        par = self.par
+
+        # We set the values of the tax close to 0 and 1 as the model cannot solve for tau = 0 and tau = 1
+        tau_values = np.linspace(0.001, 0.999, 1000)
+
+        # Create an empty list to store results
+        optimal_L_values = []
+        G_func_values = []
+        V_func_values = []
+        C_func_values = []
+
+        # Iterate over tau values
+        for tau in tau_values:
+            par.tau = tau
+            par.wtilde = (1 - par.tau) * par.w
+
+            optimal_L = self.solve_analytical()
+            optimal_L_values.append(optimal_L[0])
+
+            G_func = par.tau * par.w * optimal_L[0] * par.wtilde
+            G_func_values.append(G_func)
+
+            C_func = par.kappa + par.wtilde * optimal_L[0]
+            C_func_values.append(C_func)
+
+            V_func = sm.log(C_func ** par.alpha * G_func ** (1 - par.alpha)) - par.v * (optimal_L[0] ** 2) / 2
+            V_func_values.append(V_func)
+
+        max_V_func = max(V_func_values)
+        max_V_func_index = V_func_values.index(max_V_func)
+        max_tau = tau_values[max_V_func_index]
+
+        return max_V_func, max_tau
 
 
     
