@@ -32,7 +32,7 @@ def refined_global_optimizer(bounds, tolerance, warmup_iterations, max_iteration
         if k >= warmup_iterations:
             # Calculate chi and update the effective initial guess x^k0
             chi_k = 0.50 * (2 / (1 + np.exp((k - warmup_iterations) / 100)))
-            x_k0 = chi_k * x_k + (1 - chi_k) * x_ast
+            x_k0 = chi_k * x_k + (1 - chi_k) * x0_ast
         else:
             # Otherwise, set the effective initial guess x^k0 to the random initial guess x^k
             x_k0 = x_k
