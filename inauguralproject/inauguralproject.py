@@ -210,8 +210,10 @@ class HouseholdSpecializationModelClass:
         ax.legend()
         
 
+        
+        print( sol.beta0, sol.beta1)
         plt.show()
-        return sol.beta0, sol.beta1
+        
 
     def solve_wF_alpha(self, discrete=False):
      """ Solve model for vector of female wages """
