@@ -95,6 +95,7 @@ class ProfitClass():
         print("Optimal ell_t value for kappa = 2.0:", optimal_ell_val)
 
     def calculate_H(self):
+        
         par = self.par
         val = self.val
         sim = self.sim
@@ -116,10 +117,50 @@ class ProfitClass():
          value_function[t] = val.R ** -t * (kappa[t] * ell[t] ** (1 - val.eta) - val.w * ell[t] - (ell[t] != ell[t - 1]) * val.iota)
 
         # Calculate the expected value of the salon
-        K = 10000  # Number of shock series
+        K = 1  # Number of shock series
         expected_value = np.mean([np.sum(value_function) for _ in range(K)])
 
         print("Expected value of the salon (H):", expected_value)
+
+    def calculate_H_K(self, K):
+        par = self.par
+        val = self.val
+        sim = self.sim
+
+        T = sim.T
+        results = []
+
+        for _ in range(K):
+            # Initialize variables
+            epsilon = np.random.normal(-0.5 * val.sigma_epsilon ** 2, val.sigma_epsilon, size=T)
+            kappa = np.zeros(T)
+            kappa[0] = 1.0
+            ell = np.zeros(T)
+            ell[0] = ((1 - val.eta) * kappa[0] / val.w) ** (1 / val.eta)
+            value_function = np.zeros(T)
+
+            # Simulate the shock series and compute the value function
+            for t in range(1, T):
+                kappa[t] = np.exp(val.rho * np.log(kappa[t - 1]) + epsilon[t])
+                ell[t] = ((1 - val.eta) * kappa[t] / val.w) ** (1 / val.eta)
+                value_function[t] = val.R ** -t * (kappa[t] * ell[t] ** (1 - val.eta) - val.w * ell[t] - (ell[t] != ell[t - 1]) * val.iota)
+
+            # Calculate the expected value of the salon
+            expected_value = np.sum(value_function)
+            results.append(expected_value)
+
+        average_H = np.mean(results)
+        return average_H
+       
+         
+    def K(self):
+         
+       K_values = [100, 1000, 10000, 100000]
+
+       for K in K_values:
+          average_H = profit_model.calculate_H(K)
+          print(f"Average H for K={K}: {average_H}")
+    
 
     
     
