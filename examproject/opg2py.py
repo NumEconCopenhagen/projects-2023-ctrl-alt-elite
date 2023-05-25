@@ -41,11 +41,11 @@ class ProfitClass():
     def solve_numerical_kappa1(self):
         par = self.par
         val = self.val
-        
-        Pi = val.kappa_t*val.ell_t**(1-val.eta) -val.w*val.ell_t
-        
+    
         # Choose a specific value for kappa
         val.kappa = 1.0
+        
+        Pi = val.kappa*val.ell_t**(1-val.eta) -val.w*val.ell_t
         
         # Calculate the derivative of the profit equation with respect to ell_t
         d_Pi = sm.diff(Pi, val.ell_t)
@@ -54,7 +54,7 @@ class ProfitClass():
         optimal_ell = sm.solve(d_Pi, val.ell_t)[0]
         
         # Substitute the parameter values into the optimal_ell expression
-        optimal_ell_val = optimal_ell.subs([(val.kappa_t, val.kappa_t), (val.eta, val.eta), (val.w, val.w)])
+        optimal_ell_val = optimal_ell.subs([(val.kappa, val.kappa), (val.eta, val.eta), (val.w, val.w)])
         
         optimal_ell_val
     
@@ -65,7 +65,7 @@ class ProfitClass():
         # Choose a specific value for kappa
         val.kappa = 2.0
         
-        Pi = val.kappa_t*val.ell_t**(1-val.eta) -val.w*val.ell_t
+        Pi = val.kappa*val.ell_t**(1-val.eta) -val.w*val.ell_t
         
         # Calculate the derivative of the profit equation with respect to ell_t
         d_Pi = sm.diff(Pi, val.ell_t)
@@ -74,6 +74,6 @@ class ProfitClass():
         optimal_ell = sm.solve(d_Pi, val.ell_t)[0]
         
         # Substitute the parameter values into the optimal_ell expression
-        optimal_ell_val = optimal_ell.subs([(val.kappa_t, val.kappa_t), (val.eta, val.eta), (val.w, val.w)])
+        optimal_ell_val = optimal_ell.subs([(val.kappa, val.kappa), (val.eta, val.eta), (val.w, val.w)])
         
         optimal_ell_val
