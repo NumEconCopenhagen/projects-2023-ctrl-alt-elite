@@ -32,20 +32,31 @@ class ProfitClass():
         par.w = sm.symbols('w')
         par.ell_t = sm.symbols('ell_t')
         par.Pi = sm.symbols('Pi')
+        par.rho = sm.symbols('rho')
+        par.iota = sm.symbols('iota')
+        par.sigma_epsilon = sm.symbols('sigma_epsilon')
+        par.R = sm.symbols('R')
 
 
         val.eta = 0.5
         val.kappa = 1.0
         val.w = 1.0
-
+        val.ell_t = sm.symbols('ell_t') 
+        val.rho = 0.90
+        val.iota = 0.01
+        val.sigma_epsilon = 0.10   
+        val.R = (1 + 0.01) ** (1 / 12) 
+        
+        sim.T = 120
+        
     def solve_numerical_kappa1(self):
         par = self.par
         val = self.val
-        
-        Pi = val.kappa_t*val.ell_t**(1-val.eta) -val.w*val.ell_t
-        
+    
         # Choose a specific value for kappa
         val.kappa = 1.0
+        
+        Pi = val.kappa*val.ell_t**(1-val.eta) -val.w*val.ell_t
         
         # Calculate the derivative of the profit equation with respect to ell_t
         d_Pi = sm.diff(Pi, val.ell_t)
@@ -54,9 +65,12 @@ class ProfitClass():
         optimal_ell = sm.solve(d_Pi, val.ell_t)[0]
         
         # Substitute the parameter values into the optimal_ell expression
-        optimal_ell_val = optimal_ell.subs([(val.kappa_t, val.kappa_t), (val.eta, val.eta), (val.w, val.w)])
+        optimal_ell_val = optimal_ell.subs([(val.kappa, val.kappa), (val.eta, val.eta), (val.w, val.w)])
         
         optimal_ell_val
+
+        print("Optimal ell_t value for kappa = 1.0:", optimal_ell_val)
+
     
     def solve_numerical_kappa2(self):
         par = self.par
@@ -65,7 +79,7 @@ class ProfitClass():
         # Choose a specific value for kappa
         val.kappa = 2.0
         
-        Pi = val.kappa_t*val.ell_t**(1-val.eta) -val.w*val.ell_t
+        Pi = val.kappa*val.ell_t**(1-val.eta) -val.w*val.ell_t
         
         # Calculate the derivative of the profit equation with respect to ell_t
         d_Pi = sm.diff(Pi, val.ell_t)
@@ -74,6 +88,19 @@ class ProfitClass():
         optimal_ell = sm.solve(d_Pi, val.ell_t)[0]
         
         # Substitute the parameter values into the optimal_ell expression
-        optimal_ell_val = optimal_ell.subs([(val.kappa_t, val.kappa_t), (val.eta, val.eta), (val.w, val.w)])
+        optimal_ell_val = optimal_ell.subs([(val.kappa, val.kappa), (val.eta, val.eta), (val.w, val.w)])
         
         optimal_ell_val
+
+        print("Optimal ell_t value for kappa = 2.0:", optimal_ell_val)
+
+    def calculate_H(self):
+        par = self.par
+        val = self.val
+        sim = self.sim
+
+    
+    
+
+
+        
