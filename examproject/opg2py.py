@@ -49,6 +49,8 @@ class ProfitClass():
         val.sigma_epsilon = 0.10   
         val.R = (1 + 0.01) ** (1 / 12) 
         val.delta = 0.05
+        val.Opt_Delta = 0.097
+        val.K =1000
         
         sim.T = 120
 
@@ -288,4 +290,53 @@ class ProfitClass():
         print("Maximum Expected value of the salon (H):", max_H)
 
     #Question 5
-    
+    def alternative_policy(self, delta):
+        par = self.par
+        val = self.val
+        sim = self.sim
+
+        # Initialize variables
+        kappa_prev = 1.0
+        ell_prev = 0
+        ex_post_value = 0
+
+        # Specify the number of simulations
+        K = 500
+
+        # Simulation loop for random shock series
+        for k in range(K):
+            ex_post_value_k = 0
+            kappa_t = np.zeros(120)
+            
+            # Simulation loop for each month
+            for t in range(120):
+                # Generate random shock
+                epsilon_t = np.random.normal(-0.5 * val.sigma_epsilon**2, val.sigma_epsilon)
+                
+                # Compute demand shock for current month
+                kappa_t = np.exp(val.rho * np.log(kappa_prev) + epsilon_t)
+                
+                # Calculate optimal number of hairdressers
+                ell_star = ((1 - val.eta) * kappa_t / val.w) ** (1 / val.eta)
+                
+                # Adjust number of hairdressers based on policy
+                if abs(ell_prev - ell_star) > delta:
+                    ell_t = ell_star
+                else:
+                    ell_t = ell_prev
+                
+                # Compute ex post value of the salon for current month
+                ex_post_value_k += val.R**(-t) * (kappa_t * ell_t**(1-val.eta) - val.w * ell_t - (ell_t != ell_prev) * val.iota)
+                
+                # Update previous number of hairdressers and demand-shock
+                ell_prev = ell_t
+                kappa_prev = kappa_t
+            
+            # Add ex post value of the salon for current simulation to total ex post value
+            ex_post_value += ex_post_value_k
+
+        # Calculate expected value of the salon
+        H = ex_post_value / K
+
+        # Print the result
+        print("Expected value of the salon (H) with delta =", delta, ":", H)
