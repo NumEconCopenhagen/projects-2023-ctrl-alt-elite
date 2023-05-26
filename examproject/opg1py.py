@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import optimize
-from scipy.optimize import minimize_scalar
+from scipy.optimize import *
 from scipy.optimize import root
 import sympy as sm
 from sympy import Symbol
@@ -282,26 +282,33 @@ class ConsModel():
         par.kappa = 1
         par.v = 1/(2*(16**2))
         par.w = 1
-        par.sigma = 1.001
-        par.rho = 1.001
         par.eps = 1
         par.tau = 0.514531123095038
 
-        # Calculate the constant terms outside the loop
-        kappa_term = par.kappa + (1 - par.tau) * par.w
+        scenarios = [
+        {"sigma": 1.001, "rho": 1.001},
+        {"sigma": 1.5, "rho": 1.5}]
 
-        # Define the utility function
-        def utility_func(L):
-            C = kappa_term * L
-            G = par.tau * par.w * L
-            return ((((par.alpha*par.C**((par.sigma-1)/par.sigma))+(1-par.alpha)*par.G**((par.sigma-1)/par.sigma))**(par.sigma/(par.sigma-1)))**(1-par.rho)-1)/(1-par.rho)-par.v*(par.L**(1+par.eps)/(1+par.eps))
+        results = []
+    
+        for scenario in scenarios:
+            par.sigma = scenario["sigma"]
+            par.rho = scenario["rho"]
 
-        # Solve for the optimal value of L
-        result = root(utility_func, x0=0.7)  # Use an appropriate initial guess for L
-        optimal_L = result.x#[0]
+            # Define the utility function
+            def utility_func(L):
+                C = par.kappa + (1 - par.tau) * par.w * L
+                G = par.tau * par.w * L
+                return -(((((par.alpha * C ** ((par.sigma - 1) / par.sigma)) + (1 - par.alpha) * G ** ((par.sigma - 1) / par.sigma)) ** (par.sigma / (par.sigma - 1))) ** (1 - par.rho) - 1) / (1 - par.rho) - par.v * (L ** (1 + par.eps) / (1 + par.eps)))
 
-        # Calculate the corresponding value of G
-        optimal_G = par.tau * par.w * optimal_L
+            # Solve for the optimal value of L
+            result = minimize(utility_func, x0=10, method='L-BFGS-B', bounds=[(0,24)])  # Use an appropriate initial guess for L
+            optimal_L = result.x[0]
 
-        return optimal_L, optimal_G
+            # Calculate the corresponding value of G
+            optimal_G = par.tau * par.w * optimal_L
 
+            results.append((optimal_L, optimal_G))
+
+        return results
+    
