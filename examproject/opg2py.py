@@ -6,13 +6,14 @@ import sympy as sm
 from types import SimpleNamespace
 import matplotlib.pyplot as plt
 
-
+# Define class
 class ProfitClass():
     def __init__(self,do_print=True):
         """create the model yay"""
 
         if do_print: print('initializing the model')
 
+        # create namespaces for parameters, values and simulation
         self.par = SimpleNamespace()
         self.val = SimpleNamespace()
         self.sim = SimpleNamespace()
@@ -38,7 +39,7 @@ class ProfitClass():
         par.R = sm.symbols('R')
         par.delta = sm.symbols('delta')
 
-
+        # model values
         val.eta = 0.5
         val.kappa = 1.0
         val.w = 1.0
@@ -57,9 +58,10 @@ class ProfitClass():
         par = self.par
         val = self.val
     
-        # value for kappa
+        # Value for kappa
         val.kappa = 1.0
         
+        # Define the profit equation
         Pi = val.kappa*val.ell_t**(1-val.eta) -val.w*val.ell_t
         
         # Calculate the derivative of the profit equation with respect to ell_t
@@ -73,6 +75,7 @@ class ProfitClass():
         
         optimal_ell_val
 
+        # Print the result
         print("Optimal ell_t value for kappa = 1.0:", optimal_ell_val)
 
     
@@ -80,9 +83,10 @@ class ProfitClass():
         par = self.par
         val = self.val
         
-        # value for kappa
+        # Value for kappa
         val.kappa = 2.0
         
+        # Define the profit equation
         Pi = val.kappa*val.ell_t**(1-val.eta) -val.w*val.ell_t
         
         # Calculate the derivative of the profit equation with respect to ell_t
@@ -96,6 +100,7 @@ class ProfitClass():
         
         optimal_ell_val
 
+        # Print the result
         print("Optimal ell_t value for kappa = 2.0:", optimal_ell_val)
 
     #Question 2
@@ -283,3 +288,4 @@ class ProfitClass():
         print("Maximum Expected value of the salon (H):", max_H)
 
     #Question 5
+    
