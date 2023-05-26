@@ -13,7 +13,7 @@ from types import SimpleNamespace
 import math
 
 class ConsModel():
-    def __init__(self,do_print=True):
+    def __init__(self,do_print=False):
 
         if do_print: print('initializing the model')
 
@@ -311,4 +311,41 @@ class ConsModel():
             results.append((optimal_L, optimal_G))
 
         return results
+    
+    def tax_ces(self):
+        par = self.par
+
+        par.alpha = 0.5
+        par.kappa = 1
+        par.v = 1 / (2 * (16 ** 2))
+        par.w = 1
+        par.eps = 1
+
+        scenarios = [
+        {"sigma": 1.001, "rho": 1.001},
+        {"sigma": 1.5, "rho": 1.5}]
+
+        results = []
+    
+        for scenario in scenarios:
+            par.sigma = scenario["sigma"]
+            par.rho = scenario["rho"]
+
+            def V_func(tau, L):
+                C = par.kappa + (1 - tau) * par.w * L
+                G = tau * par.w * L
+                return ((((par.alpha * C ** ((par.sigma - 1) / par.sigma)) + (1 - par.alpha) * G ** ((par.sigma - 1) / par.sigma)) ** (par.sigma / (par.sigma - 1))) ** (1 - par.rho) - 1) / (1 - par.rho) - par.v * (L ** (1 + par.eps) / (1 + par.eps))
+
+            def optimize_tau(tau):
+                result_L = minimize_scalar(lambda L: -V_func(tau, L), bounds=(0, 24), method='bounded')
+                optimal_L = result_L.x
+                return -result_L.fun, optimal_L
+
+            result_tau = minimize_scalar(lambda tau: -optimize_tau(tau)[0], bounds=(0, 1), method='bounded')
+            optimal_tau = result_tau.x
+            results.append(optimal_tau)
+
+        return results
+
+
     
