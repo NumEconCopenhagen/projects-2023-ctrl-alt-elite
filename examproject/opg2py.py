@@ -290,63 +290,53 @@ class ProfitClass():
         print("Maximum Expected value of the salon (H):", max_H)
 
     #Question 5
-        # Function to compute the employment level according to the alternative policy
-    def compute_employment(previous_employment, kappa, optimal_employment, self):
-        val = self.val
-        par= self.par
-        if abs(previous_employment - optimal_employment) > val.optimal_delta:
-            return optimal_employment
-        elif abs(np.log(kappa) - np.log(kappa[-1])) > val.eta * val.sigma_epsilon:
-            return optimal_employment
-        else:
-            return previous_employment
-
-    # Function to compute the ex post value of the salon
-    def compute_ex_post_value(kappa_series, employment_series, self):
-        val = self.val
+    def alternative_policy(self, delta):
         par = self.par
-
-        value = 0.0
-        for t in range(T):
-            profit = kappa_series[t] * employment_series[t]**(1 - val.eta) - val.w * employment_series[t]
-            adjustment_cost = (employment_series[t] != employment_series[t-1]) * val.iota
-            value += val.R**(-t) * (profit - adjustment_cost)
-        return value
-
-    # Function to simulate the dynamic model
-    def simulate_model(self):
         val = self.val
-        par = self.par
         sim = self.sim
 
-        ex_post_values = []
-        for _ in range(val.K):
-            kappa_series = [1.0]
-            epsilon_series = np.random.normal(-0.5 * val.sigma_epsilon**2, val.sigma_epsilon, sim.T)
-            for t in range(1, sim.T):
-                kappa = val.rho * kappa_series[t-1] + epsilon_series[t]
-                kappa_series.append(kappa)
-            employment_series = [0.0]
-            value = 0.0
-            for t in range(sim.T):
-                optimal_employment = ((1 - val.eta) * kappa_series[t] / val.w)**(1 / val.eta)
-                employment = compute_employment(employment_series[t-1], kappa_series[:t+1], optimal_employment)
-                employment_series.append(employment)
-            ex_post_value = compute_ex_post_value(kappa_series, employment_series)
-            ex_post_values.append(ex_post_value)
-        return ex_post_values
+        # Initialize variables
+        kappa_prev = 1.0
+        ell_prev = 0
+        ex_post_value = 0
 
-# Compute the ex ante expected value of the salon
-ex_post_values = simulate_model()
-H = np.mean(ex_post_values)
+        # Specify the number of simulations
+        K = 500
 
-# Compute the baseline ex ante expected value for comparison
-# (Assuming Delta = 0, the previous policy)
-baseline_ex_post_values = simulate_model()
-baseline_H = np.mean(baseline_ex_post_values)
+        # Simulation loop for random shock series
+        for k in range(K):
+            ex_post_value_k = 0
+            kappa_t = np.zeros(120)
+            
+            # Simulation loop for each month
+            for t in range(120):
+                # Generate random shock
+                epsilon_t = np.random.normal(-0.5 * val.sigma_epsilon**2, val.sigma_epsilon)
+                
+                # Compute demand shock for current month
+                kappa_t = np.exp(val.rho * np.log(kappa_prev) + epsilon_t)
+                
+                # Calculate optimal number of hairdressers
+                ell_star = ((1 - val.eta) * kappa_t / val.w) ** (1 / val.eta)
+                
+                # Adjust number of hairdressers based on policy
+                if abs(ell_prev - ell_star) > delta:
+                    ell_t = ell_star
+                else:
+                    ell_t = ell_prev
+                
+                # Compute ex post value of the salon for current month
+                ex_post_value_k += val.R**(-t) * (kappa_t * ell_t**(1-val.eta) - val.w * ell_t - (ell_t != ell_prev) * val.iota)
+                
+                # Update previous number of hairdressers and demand-shock
+                ell_prev = ell_t
+                kappa_prev = kappa_t
+            
+            # Add ex post value of the salon for current simulation to total ex post value
+            ex_post_value += ex_post_value_k
 
-print("Alternative Policy (Delta = {:.2f}):".format(Delta))
-print("Ex Ante Expected Value (H): {:.4f}".format(H))
+        # Calculate expected value of the salon
+        H = ex_post_value / K
 
-print("\nBaseline Policy (Delta = 0):")
-print("Ex Ante Expected Value (H): {:.4f}".format(baseline_H))
+        # Print the result
+        print("Expected value of the salon (H) with delta =", delta, ":", H)
