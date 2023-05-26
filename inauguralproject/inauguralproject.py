@@ -181,15 +181,15 @@ class HouseholdSpecializationModelClass:
         return sol.beta0, sol.beta1
 
     
-    def estimate(self,alpha=0.5,sigma=0.5):
+    def estimate(self):
         """ estimate alpha and sigma """
 
         par = self.par
         sol = self.sol
 
         # Set the desired alpha and sigma
-        par.alpha = alpha
-        par.sigma = sigma
+        par.alpha = 0.5
+        par.sigma = 0.5
 
        # Solve the model for the vector of female wages in continuous time
         result = self.solve_wF_vec(discrete=False)
