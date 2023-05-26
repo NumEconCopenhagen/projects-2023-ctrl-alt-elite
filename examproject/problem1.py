@@ -70,6 +70,10 @@ class ConsModel():
     def plot1(self):
 
         par = self.par
+        par.alpha = 0.5
+        par.kappa = 1
+        par.v = 1/(2*(16**2))
+        par.tau = 0.3
 
         # Set the range of w values
         w_values = np.linspace(0.00001,6,100)
