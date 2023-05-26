@@ -1,6 +1,7 @@
 # Import the necessary packages
 import numpy as np
 from scipy.optimize import minimize
+from matplotlib import pyplot as plt
 
 # Define the Griewank function
 def griewank(x):
@@ -53,3 +54,38 @@ def refined_global_optimizer(bounds, tolerance, warmup_iterations, max_iteration
             break
     # Return the optimal solution and the list of effective initial guesses
     return x0_ast, x0_list
+
+def plot_solution(warmup_iterations):
+    # Bounds for x1 and x2
+    bounds = [-600, 600]
+
+    # Tolerance
+    tolerance = 10**(-8)
+
+    # Number of maximum iterations
+    max_iterations = 1000
+
+    # Call the refined global optimizer function
+    optimal_solution, initial_guesses = refined_global_optimizer(bounds, tolerance, warmup_iterations, max_iterations)
+
+    # Plotting the effective initial guesses x^k0 versus iteration counter k
+    x0_list = np.array(initial_guesses)
+    x1 = x0_list[:, 0]
+    x2 = x0_list[:, 1]
+    k = np.arange(len(x0_list))
+
+    plt.figure(figsize=(10, 6))
+    plt.scatter(k, x1, c='b', label='x1')
+    plt.scatter(k, x2, c='r', label='x2')
+    plt.xlabel('Iteration Counter (k)')
+    plt.ylabel('Effective Initial Guesses ($x^{k0}$)')
+    plt.title('Effective Initial Guesses $x^{k0}$ versus Iteration Counter k')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    print("Optimal Solution:")
+    print("x1 =", optimal_solution[0])
+    print("x2 =", optimal_solution[1])
+    print("Minimum value of the Griewank function:", griewank(optimal_solution))
+    print("Number of total iterations:", len(x0_list))

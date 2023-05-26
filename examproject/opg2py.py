@@ -112,7 +112,7 @@ class ProfitClass():
         sim = self.sim
 
         # Specify the number of simulations
-        K = 1000
+        K = 500
 
         # Initialize variables
         kappa_prev = 1.0
@@ -164,7 +164,7 @@ class ProfitClass():
         ex_post_value = 0
 
         # Specify the number of simulations
-        K = 1000
+        K = 500
 
         # Simulation loop for random shock series
         for k in range(K):
@@ -212,7 +212,7 @@ class ProfitClass():
         sim = self.sim
 
         # Specify the number of simulations
-        K = 1000
+        K = 500
 
         # Specify the range of values for Delta
         delta_values = np.linspace(0, 0.3, 50) 
