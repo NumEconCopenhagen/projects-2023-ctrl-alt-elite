@@ -298,7 +298,7 @@ class ConsModel():
 
         # Solve for the optimal value of L
         result = root(utility_func, x0=0.7)  # Use an appropriate initial guess for L
-        optimal_L = result.x[0]
+        optimal_L = result.x#[0]
 
         # Calculate the corresponding value of G
         optimal_G = par.tau * par.w * optimal_L
