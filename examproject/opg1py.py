@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import optimize
 from scipy.optimize import minimize_scalar
+from scipy.optimize import root
 import sympy as sm
 from sympy import Symbol
 from sympy.solvers import solve
@@ -277,23 +278,30 @@ class ConsModel():
     def solve_ces(self):
         par = self.par
 
-        # Define the utility function:
-        V_func = ((((par.alpha*par.C**((par.sigma-1)/par.sigma))+(1-par.alpha)*par.G**((par.sigma-1)/par.sigma))**(par.sigma/(par.sigma-1)))**(1-par.rho)-1)/(1-par.rho)-par.v*(par.L**(1+par.eps)/(1+par.eps))
+        par.alpha = 0.5
+        par.kappa = 1
+        par.v = 1/(2*(16**2))
+        par.w = 1
+        par.sigma = 1.001
+        par.rho = 1.001
+        par.eps = 1
+        par.tau = 0.514531123095038
 
-        # Define the consumption function:
-        C_func = par.kappa+(1-par.tau) * par.w*par.L
+        # Calculate the constant terms outside the loop
+        kappa_term = par.kappa + (1 - par.tau) * par.w
 
-        #Define the government spenditure function:
-        G_func = par.tau*par.w*par.L
+        # Define the utility function
+        def utility_func(L):
+            C = kappa_term * L
+            G = par.tau * par.w * L
+            return ((((par.alpha*par.C**((par.sigma-1)/par.sigma))+(1-par.alpha)*par.G**((par.sigma-1)/par.sigma))**(par.sigma/(par.sigma-1)))**(1-par.rho)-1)/(1-par.rho)-par.v*(par.L**(1+par.eps)/(1+par.eps))
 
-        #Substitute the consumption function into the utility function
-        V_subC = V_func.subs(par.C, C_func)
-        V_subG = V_subC.subs(par.G, G_func)
+        # Solve for the optimal value of L
+        result = root(utility_func, x0=0.7)  # Use an appropriate initial guess for L
+        optimal_L = result.x[0]
 
-        # Calculate the first derivative of the utility function with respect to L
-        dV_dL = sm.diff(V_subG, par.L)
+        # Calculate the corresponding value of G
+        optimal_G = par.tau * par.w * optimal_L
 
-        # Solve the first-order condition
-        optimal_L = sm.solve(dV_dL, par.L)
+        return optimal_L, optimal_G
 
-        return optimal_L
