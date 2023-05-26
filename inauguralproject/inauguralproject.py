@@ -215,39 +215,4 @@ class HouseholdSpecializationModelClass:
         plt.show()
         
 
-    def solve_wF_alpha(self, discrete=False):
-     """ Solve model for vector of female wages """
-     par = self.par
-     sol = self.sol
-
-     for i, wF in enumerate(par.wF_vec):
-         par.wF = wF
-
-          # Set alpha to 0.5
-         par.alpha = 0.5
-
-         if discrete:
-             result = self.solve_discrete()
-         else:
-             result = self.solve_cont()
-
-         sol.LM_vec[i] = result.LM
-         sol.HM_vec[i] = result.HM
-         sol.LF_vec[i] = result.LF
-         sol.HF_vec[i] = result.HF
-
-         return sol
-
-    def run_regression_alpha(self):
-     """ Run regression """
-     par = self.par
-     sol = self.sol
-
-     x = np.log(par.wF_vec)
-     y = np.log(sol.HF_vec / sol.HM_vec)
-     A = np.vstack([np.ones(x.size), x]).T
-     sol.beta0, sol.beta1 = np.linalg.lstsq(A, y, rcond=None)[0]
-
-     return sol.beta0, sol.beta1
-
         
