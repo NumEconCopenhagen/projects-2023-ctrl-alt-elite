@@ -255,7 +255,6 @@ class OilSolowModelClass():
         par.A_star = val.A_0 * (1 + val.g) ** (par.simT - 1)
         par.R
 
-    # How does climate damages develop over time and how much og the production is lost do to this?
     def solve_climate_damage(self):
         par = self.par
         sim = self.sim
