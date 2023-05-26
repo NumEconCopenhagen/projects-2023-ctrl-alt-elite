@@ -210,7 +210,7 @@ class ProfitClass():
         K = 1000
 
         # Specify the range of values for Delta
-        delta_values = np.linspace(0, 1, 50) 
+        delta_values = np.linspace(0, 0.3, 50) 
 
         # Create list for storing H values
         H_values = []
@@ -282,57 +282,76 @@ class ProfitClass():
         print("Optimal Delta:", optimal_delta)
         print("Maximum Expected value of the salon (H):", max_H)
 
-    def Maximize_H_Delta_test(self):
+    def maximize_H_delta_test(self):
         # Set parameter values
-        rho = 0.90
-        iota = 0.01
-        sigma_epsilon = 0.10
-        R = (1 + 0.01) ** (1/12)
+        par = self.par
+        val = self.val
+        sim = self.sim
 
-        # Specify the number of simulations and time periods
+        # Specify the number of simulations
         K = 1000
-        T = 120
 
-        # Specify the range of Delta values to test (positive values)
-        delta_values = np.linspace(0, 1.0, 100)
+        # Specify the range of Delta values to test
+        delta_values = np.linspace(0, 0.3, 50)
 
-        # Initialize variables
+        # Create list for storing H values
         H_values = []
 
-        # Vectorized simulation loop
+        # Initialize variables
+        optimal_delta = None
+        max_H = float('-inf')
+
+        # Perform grid search
         for delta in delta_values:
-            # Generate random shocks for all simulations and time periods
-            epsilon = np.random.normal(-0.5 * sigma_epsilon**2, sigma_epsilon, size=(K, T))
-            
-            # Compute demand shocks for all simulations and time periods
-            kappa = np.exp(np.cumsum(rho * np.log(1) + epsilon, axis=1))
-            
-            # Calculate optimal number of hairdressers for all simulations and time periods
-            ell_star = ((1 - 0.5) * kappa / 1.0) ** (1 / 0.5)
-            
-            # Initialize variables for ex post value calculation
-            ex_post_value = np.zeros(K)
-            ell_prev = np.zeros(K)
-            
-            # Ex post value calculation loop
-            for t in range(T):
-                # Adjust number of hairdressers based on policy
-                ell_t = np.where(np.abs(ell_prev - ell_star[:, t]) > delta, ell_star[:, t], ell_prev)
-                
-                # Compute ex post value of the salon for current month
-                ex_post_value += R**(-t) * (kappa[:, t] * ell_t**(1-0.5) - 1.0 * ell_t - (ell_t != ell_prev) * iota)
-                
-                # Update previous number of hairdressers
-                ell_prev = ell_t
-            
-            # Calculate average ex post value over all simulations
-            H_values.append(np.mean(ex_post_value))
+            # Initialize variables
+            kappa_prev = 1.0
+            ell_prev = 0
+            ex_post_value = 0
 
-        # Find the optimal Delta that maximizes H
-        optimal_delta = delta_values[np.argmax(H_values)]
-        max_H = max(H_values)
+            # Simulation loop
+            for k in range(K):
+                ex_post_value_k = 0
+                kappa_t = np.zeros(120)
 
-        # Plot the results
+                for t in range(120):
+                    # Generate random shock
+                    epsilon_t = np.random.normal(-0.5 * val.sigma_epsilon ** 2, val.sigma_epsilon)
+
+                    # Compute demand shock for current month
+                    kappa_t = np.exp(val.rho * np.log(kappa_prev) + epsilon_t)
+
+                    # Calculate optimal number of hairdressers
+                    ell_star = ((1 - 0.5) * kappa_t / 1.0) ** (1 / 0.5)
+
+                    # Adjust number of hairdressers based on policy
+                    if abs(ell_prev - ell_star) > delta:
+                        ell_t = ell_star
+                    else:
+                        ell_t = ell_prev
+
+
+                    # Compute ex post value of the salon for current month
+                    ex_post_value_k += val.R ** (-t) * (kappa_t * ell_t ** (1 - 0.5) - 1.0 * ell_t - (ell_t != ell_prev) * val.iota)
+
+                    # Update previous number of hairdressers and demand-shock
+                    ell_prev = ell_t
+                    kappa_prev = kappa_t
+
+                # Add ex post value of the salon for current simulation to total ex post value
+                ex_post_value += ex_post_value_k
+
+            # Calculate expected value of the salon
+            H = ex_post_value / K
+
+            # Add H to list of H values
+            H_values.append(H)
+
+            # Update optimal delta if current H is higher
+            if H > max_H:
+                max_H = H
+                optimal_delta = delta
+
+        # Plot the H values
         plt.plot(delta_values, H_values)
         plt.xlabel('Delta')
         plt.ylabel('Expected Value of the Salon (H)')
