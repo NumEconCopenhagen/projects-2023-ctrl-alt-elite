@@ -199,20 +199,9 @@ class HouseholdSpecializationModelClass:
         y = np.log(result.HF_vec / result.HM_vec)
         A = np.vstack([np.ones(x.size), x]).T
         sol.beta0, sol.beta1 = np.linalg.lstsq(A, y, rcond=None)[0]
-
-        # Plot the results
-        fig, ax = plt.subplots()
-        ax.scatter(x, y, color='blue', label='Data')
-        ax.plot(x, A.dot([sol.beta0, sol.beta1]), color='red', label='Regression Line')
-        ax.set_xlabel('log(wF)')
-        ax.set_ylabel('log(HF/HM)')
-        ax.set_title('Regression: log(HF/HM) vs. log(wF)')
-        ax.legend()
-        
-
         
         print( sol.beta0, sol.beta1)
-        plt.show()
+      
         
 
         
