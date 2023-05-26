@@ -195,9 +195,6 @@ class ConsModel():
 
         opt_tau= sm.solve(diff_Vl, par.tau)
 
-        #return opt_tau
-        print('The optimal tax is:')
-
         return opt_tau
 
     def plot3(self):
@@ -234,7 +231,7 @@ class ConsModel():
             V_func = sm.log(C_func**par.alpha * G_func **(1 - par.alpha)) - par.v * (optimal_L[0]**2) / 2
             V_func_values.append(V_func)
 
-        # Plot optimal labor input as a function of tau
+        # Plot L* as a function of tau
         plt.subplot(311)
         plt.plot(tau_values, optimal_L_values)
         plt.axvline(x=opt_tau, color='red', linestyle='--')
@@ -278,12 +275,13 @@ class ConsModel():
     def solve_ces(self):
         par = self.par
 
+        # Parameters
         par.alpha = 0.5
         par.kappa = 1
         par.v = 1/(2*(16**2))
         par.w = 1
         par.eps = 1
-        par.tau = 0.514531123095038
+        par.tau = self.optimal_tax()[0]
 
         scenarios = [
         {"sigma": 1.001, "rho": 1.001},
@@ -315,6 +313,7 @@ class ConsModel():
     def tax_ces(self):
         par = self.par
 
+        # Parameters
         par.alpha = 0.5
         par.kappa = 1
         par.v = 1 / (2 * (16 ** 2))
@@ -325,8 +324,9 @@ class ConsModel():
         {"sigma": 1.001, "rho": 1.001},
         {"sigma": 1.5, "rho": 1.5}]
 
-        results = []
+        results = [] # To store results
     
+        # Looping through sets
         for scenario in scenarios:
             par.sigma = scenario["sigma"]
             par.rho = scenario["rho"]
