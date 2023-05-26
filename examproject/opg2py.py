@@ -100,38 +100,8 @@ class ProfitClass():
 
     #Question 2
 
-    def calculate_H(self):
+    def Calculate_H(self):
         
-        par = self.par
-        val = self.val
-        sim = self.sim
-
-        T = sim.T
-
-        # Initialize variables
-        epsilon = np.random.normal(-0.5 * val.sigma_epsilon ** 2, val.sigma_epsilon, size=T)
-        kappa = np.zeros(T)
-        kappa[0] = 1.0
-        ell = np.zeros(T)
-        ell[0] = ((1 - val.eta) * kappa[0] / val.w) ** (1 / val.eta)
-        value_function = np.zeros(T)
-
-        # Simulate the shock series and compute the value function
-        for t in range(1, T):
-         kappa[t] = np.exp(val.rho * np.log(kappa[t - 1]) + epsilon[t])
-         ell[t] = ((1 - val.eta) * kappa[t] / val.w) ** (1 / val.eta)
-         value_function[t] = val.R ** -t * (kappa[t] * ell[t] ** (1 - val.eta) - val.w * ell[t] - (ell[t] != ell[t - 1]) * val.iota)
-
-        # Calculate the expected value of the salon
-        K = 1  # Number of shock series
-        expected_value = np.mean([np.sum(value_function) for _ in range(K)])
-
-        print("Expected value of the salon (H):", expected_value)
-
-
-
-    def Calculate_H_ny(self):
-
         par = self.par
         val = self.val
         sim = self.sim
@@ -139,18 +109,19 @@ class ProfitClass():
         # Specify the number of simulations
         K = 1000
 
-         # Initialize variables
+        # Initialize variables
         kappa_prev = 1.0
         ell_prev = 0
         ex_post_value = 0
 
-         # Simulation loop
+        # Simulation loop for random shock series
         for k in range(K):
             ex_post_value_k = 0
             kappa_t = np.zeros(120)
-                
+            
+            # Simulation loop for each month
             for t in range(120):
-                 # Generate random shock
+                # Generate random shock
                 epsilon_t = np.random.normal(-0.5 * val.sigma_epsilon**2, val.sigma_epsilon)
                     
                 # Compute demand shock for current month
@@ -159,11 +130,12 @@ class ProfitClass():
                 # Calculate optimal number of hairdressers
                 ell_t = ((1 - 0.5) * kappa_t[t] / 1.0) ** (1 / 0.5)
                     
-                 # Compute ex post value of the salon for current month
+                # Compute ex post value of the salon for current month
                 ex_post_value_k += val.R**(-t) * (kappa_t[t] * ell_t**(1-0.5) - 1.0 * ell_t - (ell_t != ell_prev) * val.iota)
                     
-                # Update previous number of hairdressers
+                # Update previous number of hairdressers and demand-shock
                 ell_prev = ell_t
+                kappa_prev = kappa_t[t]
                 
             # Add ex post value of the salon for current simulation to total ex post value
             ex_post_value += ex_post_value_k
@@ -175,50 +147,8 @@ class ProfitClass():
         print("Expected value of the salon (H):", H)
 
     #Question 3
-        
-    def H_Delta(self, K):
-        par = self.par
-        val = self.val
-        sim = self.sim
 
-        # Initialize the sum of salon values
-        sum_h = 0
-
-        # Perform Monte Carlo simulation
-        for k in range(K):
-            # Generate shock series
-            np.random.seed(k)  # Set the seed for reproducibility
-            epsilon = np.random.normal(loc=-0.5 * val.sigma_epsilon**2, scale=val.sigma_epsilon, size=120)
-
-            # Initialize variables
-            kappa_prev = 1
-            ell_prev = 0
-            h = 0
-
-            # Calculate the value of the salon for each period
-            for t in range(120):
-                kappa = np.exp(val.rho * np.log(kappa_prev) + epsilon[t])
-                ell_ast = ((1 - val.eta) * kappa / val.w)**(1 / val.eta)
-
-                if t == 0 or abs(ell_prev - ell_ast) > val.delta:
-                    ell = ell_ast
-                else:
-                    ell = ell_prev
-
-                profit = kappa * ell**(1 - val.eta) - val.w * ell - (ell != ell_prev) * val.iota
-                h += val.R**(-t) * profit
-
-                # Update variables for the next period
-                kappa_prev = kappa
-                ell_prev = ell
-
-            sum_h += h
-
-           # Calculate the expected value of the salon
-            H = sum_h / K
-            return H
-
-    def calculate_H_Delta_ny(self):
+    def calculate_H_Delta(self):
         par = self.par
         val = self.val
         sim = self.sim
@@ -231,11 +161,12 @@ class ProfitClass():
         # Specify the number of simulations
         K = 1000
 
-        # Simulation loop
+        # Simulation loop for random shock series
         for k in range(K):
             ex_post_value_k = 0
             kappa_t = np.zeros(120)
             
+            # Simulation loop for each month
             for t in range(120):
                 # Generate random shock
                 epsilon_t = np.random.normal(-0.5 * val.sigma_epsilon**2, val.sigma_epsilon)
@@ -255,8 +186,9 @@ class ProfitClass():
                 # Compute ex post value of the salon for current month
                 ex_post_value_k += val.R**(-t) * (kappa_t[t] * ell_t**(1-0.5) - 1.0 * ell_t - (ell_t != ell_prev) * val.iota)
                 
-                # Update previous number of hairdressers
+                # Update previous number of hairdressers and demand-shock
                 ell_prev = ell_t
+                kappa_prev = kappa_t[t]
             
             # Add ex post value of the salon for current simulation to total ex post value
             ex_post_value += ex_post_value_k
@@ -315,8 +247,9 @@ class ProfitClass():
                     # Compute ex post value of the salon for current month
                     ex_post_value_k += val.R**(-t) * (kappa_t[t] * ell_t**(1-0.5) - 1.0 * ell_t - (ell_t != ell_prev) * val.iota)
                     
-                    # Update previous number of hairdressers
+                    # Update previous number of hairdressers and demand-shock
                     ell_prev = ell_t
+                    kappa_prev = kappa_t[t]
                 
                 # Add ex post value of the salon for current simulation to total ex post value
                 ex_post_value += ex_post_value_k
