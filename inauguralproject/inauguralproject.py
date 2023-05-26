@@ -180,7 +180,7 @@ class HouseholdSpecializationModelClass:
 
         return sol.beta0, sol.beta1
 
-    
+    #Question 5
     def estimate(self):
         """ estimate alpha and sigma """
 
