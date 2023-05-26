@@ -9,6 +9,7 @@ from IPython.display import display
 import matplotlib.pyplot as plt # baseline module
 import ipywidgets as widgets
 from types import SimpleNamespace
+import math
 
 class ConsModel():
     def __init__(self,do_print=True):
@@ -36,6 +37,12 @@ class ConsModel():
         par.w = sm.symbols('w', positive=True)
         par.tau = sm.symbols('tau', nonnegative=True)
         par.wtilde = sm.symbols('wtilde', positive=True)
+
+        par.rho = sm.symbols('rho')
+        par.sigma = sm.symbols('sigma')
+        par.eps = sm.symbols('epsilon')
+
+        opt_tau = None
 
     def solve_analytical(self):
         par = self.par
@@ -86,6 +93,10 @@ class ConsModel():
     def plot2(self):
 
         par = self.par
+        par.alpha = 0.5
+        par.kappa = 1
+        par.v = 1/(2*(16**2))
+        par.w = 1
 
         # We set the values of the tax close to 0 and 1 as the model cannot solve for tau = 0 and tau = 1
         tau_values = np.linspace(0.001,0.999,100)
@@ -104,7 +115,7 @@ class ConsModel():
             optimal_L = self.solve_analytical()
             optimal_L_values.append(optimal_L[0])
 
-            G_func = par.tau * par.w * optimal_L[0] * par.wtilde
+            G_func = par.tau * par.w * optimal_L[0]
             G_func_values.append(G_func)
 
             C_func = par.kappa+par.wtilde*optimal_L[0]
@@ -150,6 +161,7 @@ class ConsModel():
         # Display the plots
         plt.tight_layout()
         plt.show()
+
     
     def optimal_labour(self): #replace wtilde
         par = self.par
@@ -158,17 +170,21 @@ class ConsModel():
         return optimal_L
     
     def optimal_tax(self):
+        global opt_tau  # Use the global opt_tau parameter
+
         par = self.par
 
         par.alpha = 0.5
         par.kappa = 1
         par.v = 1/(2*(16**2))
         par.w = 1
+        par.tau = par.tau
+
         L_opt = self.optimal_labour()
         C_func = par.kappa + (1 - par.tau) * par.w*par.L
         Cl = C_func.subs(par.L, L_opt)
 
-        G_func = par.tau * par.w * par.L * (1 - par.tau) * par.w
+        G_func = par.tau * par.w * par.L
         Gl = G_func.subs(par.L, L_opt)
 
         V_func = sm.log(Cl**par.alpha * Gl**(1 - par.alpha)) - par.v * (par.L**2) / 2
@@ -178,97 +194,106 @@ class ConsModel():
 
         opt_tau= sm.solve(diff_Vl, par.tau)
 
+        #return opt_tau
+        print('The optimal tax is:')
+
         return opt_tau
-    
-    def max_util(self):
 
-        obj = self.optimal_labour()
+    def plot3(self):
 
-        # Optimize the objective function to find the optimal value of tau
-        result = optimize.minimize_scalar(self.insert_func, bounds=(0.01, 0.99), method='bounded')
-
-        optimal_tau = result.x
-
-        return optimal_tau
-    
-    def discrete_min_util(self):
         par = self.par
-
-        # Define the objective function
-        def objective_func(tau):
-            par.tau = tau
-
-            L_opt = self.solve_analytical()[0]
-
-            C_func = par.kappa + (1 - par.tau) * par.w * L_opt
-            Cl = C_func.subs(par.L, L_opt)
-
-            G_func = par.tau * par.w * L_opt * (1 - par.tau) * par.w
-            Gl = G_func.subs(par.L, L_opt)
-
-            V_func = sm.log(Cl**par.alpha * Gl**(1 - par.alpha)) - par.v * (L_opt**2) / 2
-            Vl = V_func.subs(par.L, L_opt)
-
-            return -Vl
-
-        # Set the discrete values for par.tau
-        tau_values = np.linspace(0.01, 0.99, 100)
-
-        # Evaluate the objective function for each tau value
-        objective_values = [objective_func(tau) for tau in tau_values]
-
-        # Find the index of the minimum objective value
-        min_index = np.argmin(objective_values)
-
-        # Obtain the optimal tau value
-        optimal_tau = tau_values[min_index]
-
-        return self.objective_func()
-    
-    def plotC(self):
-        par = self.par
+        par.alpha = 0.5
+        par.kappa = 1
+        par.v = 1/(2*(16**2))
+        par.w = 1
 
         # We set the values of the tax close to 0 and 1 as the model cannot solve for tau = 0 and tau = 1
-        tau_values = np.linspace(0.001, 0.999, 1000)
+        tau_values = np.linspace(0.001,0.999,100)
 
         # Create an empty list to store results
-        optimal_L_values = []
-        G_func_values = []
-        V_func_values = []
-        C_func_values = []
+        optimal_L_values =[]
+        G_func_values =[]
+        V_func_values =[]
+        C_func_values =[]
 
         # Iterate over tau values
         for tau in tau_values:
             par.tau = tau
             par.wtilde = (1 - par.tau) * par.w
-
+            
             optimal_L = self.solve_analytical()
             optimal_L_values.append(optimal_L[0])
 
-            G_func = par.tau * par.w * optimal_L[0] * par.wtilde
+            G_func = par.tau * par.w * optimal_L[0]
             G_func_values.append(G_func)
 
-            C_func = par.kappa + par.wtilde * optimal_L[0]
+            C_func = par.kappa+par.wtilde*optimal_L[0]
             C_func_values.append(C_func)
 
-            V_func = sm.log(C_func ** par.alpha * G_func ** (1 - par.alpha)) - par.v * (optimal_L[0] ** 2) / 2
+            V_func = sm.log(C_func**par.alpha * G_func **(1 - par.alpha)) - par.v * (optimal_L[0]**2) / 2
             V_func_values.append(V_func)
 
-        max_V_func = max(V_func_values)
-        max_V_func_index = V_func_values.index(max_V_func)
-        max_tau = tau_values[max_V_func_index]
+        # Plot optimal labor input as a function of tau
+        plt.subplot(311)
+        plt.plot(tau_values, optimal_L_values)
+        plt.axvline(x=opt_tau, color='red', linestyle='--')
+        plt.xlim(0, 1)
+        plt.xlabel('tau')
+        plt.ylabel('L')
+        plt.title('Optimal labor input as a function of tau')
+        plt.grid(True)
 
-        return max_V_func, max_tau
+        # Plot G_func as a function of tau
+        plt.subplot(312)
+        plt.plot(tau_values, G_func_values)
+        plt.axvline(x=opt_tau, color='red', linestyle='--')
+        plt.xlim(0, 1)
+        plt.xlabel('tau')
+        plt.ylabel('G')
+        plt.title('Government spenditure as a function of tau')
+        plt.grid(True)
 
+        # Plot V_func as a function of tau
+        plt.subplot(313)
+        plt.plot(tau_values, V_func_values)
+        plt.axvline(x=opt_tau, color='red', linestyle='--')
+        plt.xlim(0, 1)
+        plt.xlabel('tau')
+        plt.ylabel('V')
+        plt.title('Utility as a function of tau')
+        plt.grid(True)
 
-    
+        # Adjust the spacing between subplots
+        plt.subplots_adjust(wspace=0.5, hspace=0.5)
 
+        # Set the figure size
+        fig = plt.gcf()
+        fig.set_size_inches(8, 12)
 
+        # Display the plots
+        plt.tight_layout()
+        plt.show()
 
-    
+    def solve_ces(self):
+        par = self.par
 
-            
+        # Define the utility function:
+        V_func = ((((par.alpha*par.C**((par.sigma-1)/par.sigma))+(1-par.alpha)*par.G**((par.sigma-1)/par.sigma))**(par.sigma/(par.sigma-1)))**(1-par.rho)-1)/(1-par.rho)-par.v*(par.L**(1+par.eps)/(1+par.eps))
 
+        # Define the consumption function:
+        C_func = par.kappa+(1-par.tau) * par.w*par.L
 
+        #Define the government spenditure function:
+        G_func = par.tau*par.w*par.L
 
+        #Substitute the consumption function into the utility function
+        V_subC = V_func.subs(par.C, C_func)
+        V_subG = V_subC.subs(par.G, G_func)
 
+        # Calculate the first derivative of the utility function with respect to L
+        dV_dL = sm.diff(V_subG, par.L)
+
+        # Solve the first-order condition
+        optimal_L = sm.solve(dV_dL, par.L)
+
+        return optimal_L
